@@ -43,7 +43,7 @@ loadstring(game:HttpGet("https://vertex-z.onrender.com/main.lua"))()
 """
 
 @app.route("/main.lua")
-def serve_loader():
+def serve_main():
     ip = request.remote_addr
     scrambled = scramble_ip(ip)
 
