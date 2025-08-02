@@ -5,7 +5,7 @@ app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
 # Script content
-SCRIPT_PAYLOAD = '''loadstring(game:HttpGet("https://{host}/main?key={key}", true))()'''
+SCRIPT_PAYLOAD = '''loadstring(game:HttpGet("https://https://vertex-z.onrender.com/main?key=skidder", true))()'''
 PRIVATE_SCRIPT = '''loadstring(game:HttpGet("https://pandadevelopment.net/virtual/file/9638beb4d5e3ae06"))()'''
 USED_KEYS = {}
 RATE_LIMIT = {}  # IP or key : last access timestamp
