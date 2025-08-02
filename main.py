@@ -1,6 +1,3 @@
-from flask import Flask, request, abort
-import time, os
-
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
@@ -19,10 +16,7 @@ EXPECTED_HEADER_VALUE = "VertexZClient"
 # Executor validation
 def is_valid_executor():
     ua = request.headers.get("User-Agent", "").lower()
-    header = request.headers.get(CUSTOM_HEADER, "")
-    if any(x in ua for x in ["synapse", "krnl", "fluxus", "delta", "executor", "Delta"]):
-        return header == EXPECTED_HEADER_VALUE
-    return False
+    return any(x in ua for x in ["synapse", "krnl", "fluxus", "delta", "executor", "Delta"])
 
 # Rate limit logic
 def rate_limited(key_or_ip):
