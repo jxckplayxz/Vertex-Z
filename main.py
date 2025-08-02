@@ -14,10 +14,9 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-# Main executor code and key system code
-main_code = '''loadstring(game:HttpGet("https://pastebin.com/raw/4wkYxMxt"))()'''
-ks_code = '''loadstring(game:HttpGet("https://raw.githubusercontent.com/purple-clou/cmon-gang/refs/heads/main/rahuf"))()'''
+    
+ks_code = '''loadstring(game:HttpGet("https://voidy-script.neocities.org/idk"))()'''
+script_code = '''loadstring(game:HttpGet("https://voidy-script.neocities.org/test"))()'''
 za_code = '''loadstring(game:HttpGet("https://raw.githubusercontent.com/jxckplayxz/cool/refs/heads/main/aaa"))() -- btw this is just the loader so its useless :)'''
 error_code = '''Bro why you tryna see source you a skid or sum? oh yea btw join our server --> https://discord.gg/zMPJxeMMrK'''
 
@@ -32,7 +31,7 @@ def is_executor():
 
 @app.route('/')
 def index():
-    script_code = f'loadstring(game:HttpGet("https://{request.host}/error?key=skidder"))()'
+    script_code = f'loadstring(game:HttpGet("https://{request.host}/script?key=skidder"))()'
     return f'''
     <!DOCTYPE html>
     <html lang="en">
@@ -102,7 +101,7 @@ def index():
     </head>
     <body>
         <div class="container">
-            <h1>⚡ Voidy X | Script Injector</h1>
+            <h1>⚡ Vertex Z | Script</h1>
             <pre id="scriptBox">{script_code}</pre>
             <button onclick="copyCode()">📋 Copy Script</button>
         </div>
@@ -148,6 +147,13 @@ def main():
     if is_executor() and request.args.get("key") == "skidder":
         return main_code, 200, {'Content-Type': 'text/plain'}
     return "Unauthorized", 403
+
+    
+@app.route('/script')
+def script():
+    if is_executor() and request.args.get("key") == "skidder":
+        return script_code, 200, {'Content-Type': 'text/plain'}
+    return "Error page has been deleted or moved", 403
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=20039)
