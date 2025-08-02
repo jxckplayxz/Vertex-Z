@@ -2,21 +2,11 @@ from flask import Flask, request, Response, render_template_string
 
 app = Flask(__name__)
 
-# A simple in-memory blocklist using hashed (scrambled) IPs
-blocked_hashes = set()
-
-vertexz_loader_code = """
--- VertexZ
-loadstring(game:HttpGet("https://vertex-z.onrender.com/main.lua"))()
-"""
-
-vertexz_loader_code = """
--- VertexZ main :)
+LUA_CODE = """
 loadstring(game:HttpGet("https://pandadevelopment.net/virtual/file/9638beb4d5e3ae06"))()
 """
 
-# Your custom 404 HTML template
-html_404_template = """
+ERROR_PAGE = """
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -122,43 +112,16 @@ html_404_template = """
 </html>
 """
 
-# Optional: Simple scramble function (NOT stored IP, only hash)
-def scramble_ip(ip):
-    import hashlib
-    return hashlib.sha256(ip.encode()).hexdigest()
+@app.route("/Vertex.lua")
+def serve_script():
+    user_agent = request.headers.get("User-Agent", "").lower()
 
-@app.route("/vertexz.lua")
-def vertexz_loader():
-    user_ip = request.remote_addr
-    scrambled = scramble_ip(user_ip)
+    if "roblox" in user_agent or "game" in user_agent or "studio" in user_agent or "windows" not in user_agent:
+        return Response(LUA_CODE, mimetype="text/plain")
 
-    if scrambled in blocked_hashes:
-        return render_template_string(html_404_template), 404
+    # Anyone trying to access via browser will get this
+    return Response(render_template_string(ERROR_PAGE), mimetype="text/html")
 
-    return Response(vertexz_loader_code, mimetype="text/plain")
-
-@app.route("/main.lua")
-def vertexz_main():
-    user_ip = request.remote_addr
-    scrambled = scramble_ip(user_ip)
-
-    if scrambled in blocked_hashes:
-        return render_template_string(html_404_template), 404
-
-    return Response(vertexz_main_code, mimetype="text/plain")
-
-# Admin endpoint to block someone (manually for now)
-@app.route("/block/<string:scrambled_ip>")
-def block_ip(scrambled_ip):
-    blocked_hashes.add(scrambled_ip)
-    return f"Blocked {scrambled_ip}", 200
-
-# Admin endpoint to unblock
-@app.route("/unblock/<string:scrambled_ip>")
-def unblock_ip(scrambled_ip):
-    blocked_hashes.discard(scrambled_ip)
-    return f"Unblocked {scrambled_ip}", 200
 
 if __name__ == "__main__":
-    app.run(debug=True)
- 
+    app.run(host="0.0.0.0", port=20075)
