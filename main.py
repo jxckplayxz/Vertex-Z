@@ -1,37 +1,44 @@
-from flask import Flask, request, session, redirect, url_for, render_template_string, send_from_directory
-from werkzeug.utils import secure_filename
-import os
-import time
+from flask import Flask, request, abort
+import time, os
 
 app = Flask(__name__)
-app.secret_key = 'super-secret-key'
+app.secret_key = os.urandom(24)
 
-# Upload config
-UPLOAD_FOLDER = 'uploads'
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+# Script content
+SCRIPT_PAYLOAD = '''loadstring(game:HttpGet("https://{host}/main?key={key}", true))()'''
+PRIVATE_SCRIPT = '''loadstring(game:HttpGet("https://pandadevelopment.net/virtual/file/9638beb4d5e3ae06"))()'''
+USED_KEYS = {}
+RATE_LIMIT = {}  # IP or key : last access timestamp
+ALLOWED_KEYS = {"skidder"}  # Only valid keys
 
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-    
-ks_code = '''loadstring(game:HttpGet("https://pandadevelopment.net/virtual/file/9638beb4d5e3ae06"))()'''
-script_code = '''loadstring(game:HttpGet("https://vertex-z.onrender.com/main?key=skidder"))()'''
-za_code = '''loadstring(game:HttpGet("https://raw.githubusercontent.com/jxckplayxz/cool/refs/heads/main/aaa"))() -- btw this is just the loader so its useless :)'''
-error_code = '''Bro why you tryna see source you a skid or sum? oh yea btw join our server --> https://discord.gg/zMPJxeMMrK'''
+# Security config
+ANTI_SPAM_SECONDS = 5
+CUSTOM_HEADER = "X-Executor-Auth"
+EXPECTED_HEADER_VALUE = "VertexZClient"
 
-# HTML templates
-home_page = '''...'''  # keep your current home_page string
-locked_page = '''...'''  # keep your current locked_page string
+# Executor validation
+def is_valid_executor():
+    ua = request.headers.get("User-Agent", "").lower()
+    header = request.headers.get(CUSTOM_HEADER, "")
+    if any(x in ua for x in ["synapse", "krnl", "fluxus", "roblox", "executor"]):
+        return header == EXPECTED_HEADER_VALUE
+    return False
 
-def is_executor():
-    user_agent = request.headers.get('User-Agent', '').lower()
-    executor_keywords = ['synapse', 'roblox', 'krnl', 'fluxus', 'executor', 'delta']
-    return any(exec in user_agent for exec in executor_keywords)
+# Rate limit logic
+def rate_limited(key_or_ip):
+    now = time.time()
+    last = RATE_LIMIT.get(key_or_ip, 0)
+    if now - last < ANTI_SPAM_SECONDS:
+        return True
+    RATE_LIMIT[key_or_ip] = now
+    return False
 
-@app.route('/')
+# Homepage - shows script payload
+@app.route("/")
 def index():
-    script_code = f'loadstring(game:HttpGet("https://{request.host}/script?key=skidder"))()'
+    key = "skidder"
+    host = request.host
+    script = SCRIPT_PAYLOAD.format(host=host, key=key)
     return f'''
     <!DOCTYPE html>
     <html lang="en">
@@ -102,7 +109,7 @@ def index():
     <body>
         <div class="container">
             <h1>⚡ Vertex Z | Script</h1>
-            <pre id="scriptBox">{script_code}</pre>
+            <pre id="scriptBox">{script}</pre>
             <button onclick="copyCode()">📋 Copy Script</button>
         </div>
         <script>
@@ -117,43 +124,38 @@ def index():
     </html>
     '''
 
-
-executed_keys = {}
-
-@app.route('/track', methods=['POST'])
-def track():
-    key = request.form.get("key", "")
-    executed_keys[key] = time.time()
-    return "Tracked", 200
-
-@app.route('/raw')
-def raw():
-    key = request.args.get("key", "")
-    last_exec = executed_keys.get(key)
-
-    if last_exec and time.time() - last_exec < 10:
-        return ks_code, 200, {'Content-Type': 'text/plain'}
-    else:
-        return error_code, 200, {'Content-Type': 'text/plain'}
-
-@app.route('/error')
-def error():
-    if is_executor() and request.args.get("key") == "skidder":
-        return za_code, 200, {'Content-Type': 'text/plain'}
-    return "Error page has been deleted or moved", 403
-
-@app.route('/main')
+# Script endpoint
+@app.route("/main")
 def main():
-    if is_executor() and request.args.get("key") == "skidder":
-        return ks_code, 200, {'Content-Type': 'text/plain'}
-    return "Unauthorized", 403
+    key = request.args.get("key", "")
+    ip = request.remote_addr
 
-    
-@app.route('/script')
-def script():
-    if is_executor() and request.args.get("key") == "skidder":
-        return script_code, 200, {'Content-Type': 'text/plain'}
-    return "Error page has been deleted or moved", 403
+    if not is_valid_executor():
+        abort(403)
 
+    if key not in ALLOWED_KEYS or key in USED_KEYS:
+        abort(403)
+
+    if rate_limited(ip):
+        abort(429)
+
+    USED_KEYS[key] = time.time()
+
+    return PRIVATE_SCRIPT, 200, {
+        'Content-Type': 'text/plain',
+        'Cache-Control': 'no-store'
+    }
+
+# Custom error pages
+@app.errorhandler(403)
+def forbidden(e):
+    return "-- Access Denied | Join our Discord: https://discord.com/invite/hCTCQwPKd3", 403
+
+@app.errorhandler(429)
+def ratelimit(e):
+    return "-- Slow down! Too many requests.", 429
+
+# Launch
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=20039)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
