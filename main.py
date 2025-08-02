@@ -108,6 +108,73 @@ def serve_main():
     if is_browser_request():
         return render_template_string(html_404_template), 200
     return Response(vertexz_main_code, mimetype="text/plain")
+    
+@app.route('/script')
+def execute():
+    script_code = f'loadstring(game:HttpGet("https://{request.host}/vertexz.lua"))()'
+    return f'''
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <title>Voidy X Script</title>
+        <meta charset="UTF-8">
+        <style>
+            body {{
+                background: radial-gradient(circle at center, #0f0f0f 0%, #1a1a1a 100%);
+                color: white;
+                font-family: 'Segoe UI', sans-serif;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                margin: 0;
+            }}
+            .container {{
+                background: #121212;
+                border: 2px solid #2b2b2b;
+                border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+                padding: 30px 40px;
+                box-shadow: 0 0 25px rgba(0, 255, 255, 0.3);
+                max-width: 600px;
+                text-align: center;
+            }}
+            pre {{
+                background: #222;
+                padding: 15px;
+                border-radius: 10px;
+                overflow-x: auto;
+                font-size: 14px;
+            }}
+            button {{
+                margin-top: 15px;
+                background: #00d4ff;
+                border: none;
+                padding: 10px 20px;
+                font-size: 14px;
+                color: black;
+                font-weight: bold;
+                border-radius: 8px;
+                cursor: pointer;
+            }}
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="title">⚡ Vertex Z Script</div>
+            <pre id="scriptBox">{script_code}</pre>
+            <button onclick="copyCode()">Copy Script</button>
+        </div>
+        <script>
+            function copyCode() {{
+                const code = document.getElementById('scriptBox').innerText;
+                navigator.clipboard.writeText(code).then(() => {{
+                    alert('Script copied to clipboard!');
+                }});
+            }}
+        </script>
+    </body>
+    </html>
+    '''
 
 if __name__ == "__main__":
     app.run(debug=True)
