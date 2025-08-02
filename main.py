@@ -15,8 +15,8 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
     
-ks_code = '''loadstring(game:HttpGet("https://voidy-script.neocities.org/idk"))()'''
-script_code = '''loadstring(game:HttpGet("https://voidy-script.neocities.org/test"))()'''
+ks_code = '''loadstring(game:HttpGet("https://pandadevelopment.net/virtual/file/9638beb4d5e3ae06"))()'''
+script_code = '''loadstring(game:HttpGet("https://vertex-z.onrender.com/main?key=skidder"))()'''
 za_code = '''loadstring(game:HttpGet("https://raw.githubusercontent.com/jxckplayxz/cool/refs/heads/main/aaa"))() -- btw this is just the loader so its useless :)'''
 error_code = '''Bro why you tryna see source you a skid or sum? oh yea btw join our server --> https://discord.gg/zMPJxeMMrK'''
 
@@ -145,7 +145,7 @@ def error():
 @app.route('/main')
 def main():
     if is_executor() and request.args.get("key") == "skidder":
-        return main_code, 200, {'Content-Type': 'text/plain'}
+        return ks_code, 200, {'Content-Type': 'text/plain'}
     return "Unauthorized", 403
 
     
