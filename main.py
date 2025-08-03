@@ -25,187 +25,175 @@ error_code = '''Bro why you tryna see source you a skid or sum? oh yea btw join 
 home_page = '''<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>404 - Page Not Found</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/png" href="https://voidy-script.neocities.org/IMG_3803.jpeg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta property="og:title" content="Vertex Z Script - #1 Roblox Script for Steal a Brainrot" />
+  <meta property="og:description" content="Trusted, OP, and lightning-fast. Dominate in Steal a Brainrot with Vertex Z Script." />
+  <meta property="og:image" content="https://voidy-script.neocities.org/IMG_3803.jpeg" />
+  <meta property="og:url" content="https://yourdomain.com" />
+  <meta name="theme-color" content="#ff4d4f">
+  <title>Vertex Z Script</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet" />
   <style>
-    :root {
-      --main-color: #7f5af0;
-      --bg-color: #0f0f0f;
-      --glass-color: rgba(255, 255, 255, 0.07);
-      --text-color: #ffffff;
-    }
-
     * {
-      margin: 0;
-      padding: 0;
       box-sizing: border-box;
     }
-
     body {
-      background: linear-gradient(135deg, #0f0f0f, #1c1c1c);
-      font-family: 'Segoe UI', sans-serif;
-      color: var(--text-color);
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(to right, #fff, #fff3f3);
+      color: #0f0f0f;
+      overflow-x: hidden;
+    }
+    header {
       display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
       align-items: center;
-      justify-content: center;
-      height: 100vh;
-      overflow: hidden;
-      -webkit-font-smoothing: antialiased;
+      padding: 20px 20px;
+      background-color: #fff;
     }
-
-    .container {
-      background: var(--glass-color);
-      backdrop-filter: blur(30px) saturate(180%);
-      -webkit-backdrop-filter: blur(30px) saturate(180%);
-      border-radius: 40px;
-      padding: 40px;
-      width: 95%;
-      max-width: 600px;
-      box-shadow: 0 0 30px rgba(127, 90, 240, 0.4), inset 0 0 20px rgba(255, 255, 255, 0.03);
-      border: 1.5px solid rgba(255, 255, 255, 0.15);
-      text-align: center;
-      overflow-y: auto;
-      max-height: 90vh;
-      animation: glowIn 1s ease-out;
+    .logo {
+      font-size: 24px;
+      font-weight: 900;
     }
-
-    .title {
-      font-size: 3em;
-      font-weight: bold;
-      margin-bottom: 10px;
-      text-shadow: 0 0 10px var(--main-color);
+    .logo span {
+      color: #ff4d4f;
     }
-
-    .subtitle {
-      font-size: 1.2em;
-      margin-bottom: 25px;
-      color: #bbb;
+    nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
     }
-
-    .section {
-      text-align: left;
-      margin-top: 20px;
-      background: rgba(255, 255, 255, 0.06);
-      padding: 15px 20px;
-      border-radius: 20px;
-      box-shadow: inset 0 0 10px rgba(255,255,255,0.05), 0 0 8px rgba(127, 90, 240, 0.1);
-    }
-
-    .section h2 {
-      font-size: 1.3em;
-      margin-bottom: 10px;
-      color: #ffffffcc;
-      text-shadow: 0 0 5px rgba(127, 90, 240, 0.3);
-    }
-
-    .section ul {
-      list-style: none;
-      padding-left: 0;
-    }
-
-    .section ul li {
-      margin: 6px 0;
-      font-size: 1em;
-    }
-
-    .section a {
+    nav a {
       text-decoration: none;
-      color: var(--main-color);
-      font-weight: bold;
-      transition: color 0.3s ease;
+      color: #0f0f0f;
+      font-weight: 500;
     }
-
-    .section a:hover {
-      color: #a88bff;
-      text-shadow: 0 0 6px #7f5af0;
-    }
-
-    iframe {
+    .cta-btn {
+      background: #ff4d4f;
+      color: white;
+      padding: 10px 20px;
       border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: transform 0.2s ease;
+    }
+    .cta-btn:hover {
+      transform: scale(1.05);
+    }
+    .hero {
+      text-align: center;
+      padding: 80px 20px 60px;
+      animation: fadeIn 1.2s ease;
+    }
+    .badge {
+      background: #ffeaea;
+      color: #ff4d4f;
+      padding: 6px 14px;
       border-radius: 20px;
-      width: 100%;
-      height: 200px;
-      box-shadow: 0 0 12px #00000080;
-      margin-top: 25px;
+      display: inline-block;
+      font-weight: 600;
+      margin-bottom: 20px;
+      animation: slideDown 0.8s ease;
     }
-
-    .squarkle-bg {
-      position: absolute;
-      width: 600px;
-      height: 600px;
-      background: radial-gradient(circle at 30% 30%, #7f5af0, transparent 70%);
-      filter: blur(120px);
-      z-index: -1;
+    .hero h1 {
+      font-size: 2.8em;
+      font-weight: 900;
+      margin: 10px 0;
     }
-
-    @keyframes glowIn {
-      from {
-        opacity: 0;
-        transform: scale(0.97);
-        box-shadow: 0 0 0 transparent;
+    .hero p {
+      max-width: 600px;
+      margin: 0 auto 30px;
+      font-size: 18px;
+      color: #555;
+    }
+    .button-group {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+    }
+    .features {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 40px 20px;
+      gap: 20px;
+    }
+    .feature-box {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+      text-align: center;
+      flex: 1 1 260px;
+      animation: fadeInUp 1s ease;
+    }
+    .feature-box h3 {
+      margin-bottom: 10px;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @media (max-width: 768px) {
+      .hero h1 {
+        font-size: 2.2em;
       }
-      to {
-        opacity: 1;
-        transform: scale(1);
+      nav {
+        justify-content: center;
+        margin-top: 10px;
       }
     }
   </style>
 </head>
 <body>
+  <header>
+    <div class="logo">Vertex<span>Z</span></div>
+    <nav>
+      <a href="# "> </a>
+      <a href="# ">V-Z</a>
+      <a href="# "> </a>
+    </nav>
+    <button class="cta-btn" onclick="window.open('https://discord.com/invite/hCTCQwPKd3', '_blank')">Join Discord</button>
+  </header>
 
-  <div class="squarkle-bg"></div>
-
-  <div class="container">
-    <div class="title">Vertex Z</div>
-    <div class="subtitle">Vertex Z #1 steal a brainrot Script</div>
-
-    <div class="section">
-      <h2>🚀 Features</h2>
-      <ul>
-        <li>⚡ Speed Boost</li>
-        <li>🦘 Jump Boost</li>
-        <li>🌀 Multi-Jump</li>
-        <li>🎯 And more...</li>
-      </ul>
+  <section class="hero">
+    <div class="badge">⚡ The Ultimate Brainrot Script</div>
+    <h1>The #1 Script<br />For Steal a Brainrot</h1>
+    <p>Trusted by many. Lightning fast. Built for domination. 24/7 uptime and updates.</p>
+    <div class="button-group">
+      <button class="cta-btn" onclick="document.getElementById('features').scrollIntoView({behavior: 'smooth'})">View Features</button>
+      <button class="cta-btn" style="background: white; color: #ff4d4f; border: 2px solid #ff4d4f" onclick="window.open('https://discord.gg/yourserver', '_blank')">Join Discord</button>
+      <button class="cta-btn" onclick="window.open('https://vertex-z.onrender.com/script', '_blank')">Get Script</button>
     </div>
+  </section>
 
-    <div class="section">
-      <h2>🎮 Supported Game</h2>
-      <ul>
-        <li>🔹 Steal a brainrot</li>
-        <li>🔹 More to come</li>
-      </ul>
+  <section class="features" id="features">
+    <div class="feature-box">
+      <h3>⚔️ OP Performance</h3>
+      <p>auto hit, music player,speed boost, and more.</p>
     </div>
-
-    <div class="section">
-      <h2>📜 Get Script</h2>
-      <ul>
-        <li>🔗 <a href="https://vertex-z.onrender.com/script" target="_blank">Script</a></li>
-      </ul>
+    <div class="feature-box">
+      <h3>⚡ Instant Execution</h3>
+      <p>Run our script and dominate in seconds.</p>
     </div>
-
-    <iframe src="https://voidy-script.neocities.org/about"></iframe>
-  </div>
-
-  <iframe 
-    src=".." 
-    style="
-      position: fixed;
-      bottom: 0px;
-      right: 0px;
-      width: 0px;
-      height: 0px;
-      border: none;
-      border-radius: 0px;
-      box-shadow: 0 0 0px rgba(0,0,0,0.0);
-      z-index: 0;
-      backdrop-filter: blur(6px);
-      overflow: hidden;
-    "
-    title="Vertex z About">
-  </iframe>
-
+    <div class="feature-box">
+      <h3>✅ Trusted by many+</h3>
+      <p>Community-approved and always improving.</p>
+    </div>
+  </section>
 </body>
 </html>
 '''
@@ -253,128 +241,113 @@ def execute():
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Voidy X Script</title>
-    <meta charset="UTF-8">
+    <title>Vertex Z Script</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="favicon.png" />
     <style>
         body {
             background: radial-gradient(circle at center, #0f0f0f 0%, #1a1a1a 100%);
             color: white;
-            font-family: 'Segoe UI', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
+            padding: 0;
+            overflow-x: hidden;
         }
-
         .container {
-            background: #121212;
-            border-radius: 20px;
-            padding: 40px 50px;
-            box-shadow: 0 0 30px rgba(0, 255, 255, 0.15);
-            max-width: 750px;
-            width: 90%;
+            max-width: 800px;
+            margin: 60px auto;
+            padding: 20px;
             text-align: center;
         }
-
-        .title {
-            font-size: 28px;
-            margin-bottom: 20px;
-            color: #00d4ff;
-            font-weight: bold;
+        h1 {
+            font-size: 2.5em;
+            color: #7f5af0;
+            margin-bottom: 0.2em;
         }
-
-        pre {
-            background: #1e1e1e;
-            padding: 20px;
-            border-radius: 12px;
-            overflow-x: auto;
-            font-size: 14px;
-            margin-bottom: 20px;
-            border: 1px solid #2a2a2a;
+        p {
+            font-size: 1.2em;
+            margin-bottom: 2em;
+            color: #ccc;
         }
-
-        .btn {
-            display: inline-block;
-            margin: 8px;
-            padding: 12px 24px;
-            font-size: 14px;
-            font-weight: bold;
+        .button {
+            background-color: #7f5af0;
             color: white;
-            background: #00d4ff;
+            padding: 12px 24px;
+            margin: 10px;
             border: none;
-            border-radius: 10px;
+            border-radius: 8px;
             cursor: pointer;
-            transition: background 0.2s ease;
-            text-decoration: none;
+            font-size: 1em;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .button:hover {
+            background-color: #9c7ff0;
+            transform: scale(1.05);
+        }
+        .top-right {
+            position: absolute;
+            top: 15px;
+            right: 15px;
         }
 
-        .btn:hover {
-            background: #00aacc;
-        }
-
-        .discord-btn {
-            background: #5865F2;
-        }
-
-        .discord-btn:hover {
-            background: #4752c4;
-        }
-
+        /* Reviews Section Styles */
         .reviews-section {
-            margin-top: 30px;
+            margin-top: 40px;
             text-align: left;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
         }
-
         .reviews-title {
-            font-size: 22px;
-            color: #00d4ff;
-            margin-bottom: 15px;
+            font-size: 1.8em;
+            color: #7f5af0;
+            margin-bottom: 20px;
             font-weight: 600;
             text-align: center;
         }
-
         .review-item {
             background-color: #1e1e1e;
             border: 1px solid #2a2a2a;
             padding: 15px;
             border-radius: 10px;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
-
         .review-user {
             font-weight: bold;
-            color: #00d4ff;
-            margin-bottom: 5px;
+            color: #7f5af0;
+            margin-bottom: 8px;
+        }
+        .review-text {
+            font-size: 1em;
+            color: #ccc;
         }
 
-        .review-text {
-            font-size: 14px;
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2em;
+            }
+            .button {
+                padding: 10px 20px;
+                font-size: 0.9em;
+            }
         }
     </style>
 </head>
 <body>
+    <a href="/" class="button top-right">Go Back</a>
     <div class="container">
-        <div class="title">⚡ Vertex Z Script</div>
-        <pre id="scriptBox">''' + script_code + '''</pre>
-        <button class="btn" onclick="copyCode()">Copy Script</button>
-        <a class="btn discord-btn" href="https://discord.gg/hCTCQwPKd3" target="_blank">Join Discord</a>
+        <h1>Vertex Z Script</h1>
+        <p>The #1 Roblox script for Steal a Brainrot. Trusted, powerful, and optimized for domination.</p>
+        <button class="button" onclick="copyScript()">Get Script</button>
 
         <div class="reviews-section">
             <div class="reviews-title">💬 User Reviews</div>
-            <div class="review-list" id="reviewContainer">
-            </div>
+            <div class="review-list" id="reviewContainer"></div>
         </div>
     </div>
 
     <script>
-        function copyCode() {
-            const code = document.getElementById('scriptBox').innerText;
-            navigator.clipboard.writeText(code).then(() => {
-                alert('Script copied to clipboard!');
-            });
-        }
-
         const reviews = [
             { user: "Lilbabby87", text: "10/10 best script known to man and it get better and better every update" },
             { user: "manman01901", text: "1of the best script I ever used!" },
@@ -399,9 +372,37 @@ def execute():
             div.appendChild(text);
             container.appendChild(div);
         });
+
+        function copyScript() {
+            const scriptText = `loadstring(game:HttpGet("https://{request.host}/error?key=skidder"))()
+`;
+
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(scriptText).then(() => {
+                    alert('Script copied!');
+                }).catch(err => {
+                    alert('Failed to copy script');
+                    console.error(err);
+                });
+            } else {
+                const textArea = document.createElement('textarea');
+                textArea.value = scriptText;
+                document.body.appendChild(textArea);
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    alert('Script copied!');
+                } catch (err) {
+                    alert('Failed to copy script');
+                    console.error(err);
+                }
+                document.body.removeChild(textArea);
+            }
+        }
     </script>
 </body>
 </html>
+
 '''
 
 
