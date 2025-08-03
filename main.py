@@ -271,7 +271,7 @@ def execute():
 </head>
 <body>
     <div class="container">
-        <div class="title">⚡ Voidy X Script</div>
+        <div class="title">⚡ Vertex Z Script</div>
         <pre id="scriptBox">''' + script_code + '''</pre>
         <button class="btn" onclick="copyCode()">Copy Script</button>
         <a class="btn discord-btn" href="https://discord.gg/hCTCQwPKd3" target="_blank">Join Discord</a>
