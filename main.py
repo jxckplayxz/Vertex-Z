@@ -240,7 +240,7 @@ home_page = '''<!DOCTYPE html>
     <p>Trusted by many. Lightning fast. Built for domination. 24/7 uptime and updates.</p>
     <div class="button-group">
       <button class="cta-btn" onclick="document.getElementById('features').scrollIntoView({behavior: 'smooth'})">View Features</button>
-      <button class="cta-btn" style="background: white; color: #ff4d4f; border: 2px solid #ff4d4f" onclick="window.open('https://discord.gg/yourserver', '_blank')">Join Discord</button>
+      <button class="cta-btn" style="background: white; color: #ff4d4f; border: 2px solid #ff4d4f" onclick="window.open('https://discord.gg/hCTCQwPKd3', '_blank')">Join Discord</button>
       <button class="cta-btn" onclick="window.open('https://vertex-z.onrender.com/script', '_blank')">Get Script</button>
     </div>
   </section>
