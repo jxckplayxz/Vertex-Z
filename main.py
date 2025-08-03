@@ -45,18 +45,33 @@ home_page = '''<!DOCTYPE html>
       background: linear-gradient(to right, #fff, #fff3f3);
       color: #0f0f0f;
       overflow-x: hidden;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+    body.dark {
+      background: linear-gradient(to right, #0f0f0f, #1a1a1a);
+      color: #eee;
     }
     header {
       display: flex;
       flex-wrap: wrap;
-      justify-content: space-between;
+      justify-content: flex-end;
       align-items: center;
       padding: 20px 20px;
       background-color: #fff;
+      transition: background-color 0.3s ease;
+    }
+    body.dark header {
+      background-color: #121212;
     }
     .logo {
       font-size: 24px;
       font-weight: 900;
+      color: #0f0f0f;
+      margin-right: auto;
+      transition: color 0.3s ease;
+    }
+    body.dark .logo {
+      color: #eee;
     }
     .logo span {
       color: #ff4d4f;
@@ -65,11 +80,16 @@ home_page = '''<!DOCTYPE html>
       display: flex;
       flex-wrap: wrap;
       gap: 15px;
+      align-items: center;
     }
     nav a {
       text-decoration: none;
       color: #0f0f0f;
       font-weight: 500;
+      transition: color 0.3s ease;
+    }
+    body.dark nav a {
+      color: #eee;
     }
     .cta-btn {
       background: #ff4d4f;
@@ -79,10 +99,36 @@ home_page = '''<!DOCTYPE html>
       border-radius: 6px;
       cursor: pointer;
       font-weight: 600;
-      transition: transform 0.2s ease;
+      transition: transform 0.2s ease, background-color 0.3s ease;
+      margin-left: 10px;
     }
     .cta-btn:hover {
       transform: scale(1.05);
+      background-color: #e04343;
+    }
+    body.dark .cta-btn {
+      background: #ff6b6b;
+    }
+    body.dark .cta-btn:hover {
+      background-color: #ff4d4d;
+    }
+
+    /* Dropdown styling */
+    .theme-select {
+      padding: 10px 15px;
+      border-radius: 6px;
+      border: 1px solid #ff4d4f;
+      background: white;
+      color: #ff4d4f;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      margin-left: 10px;
+    }
+    body.dark .theme-select {
+      background: #1e1e1e;
+      color: #ff6b6b;
+      border-color: #ff6b6b;
     }
     .hero {
       text-align: center;
@@ -99,6 +145,10 @@ home_page = '''<!DOCTYPE html>
       margin-bottom: 20px;
       animation: slideDown 0.8s ease;
     }
+    body.dark .badge {
+      background: #3a1a1a;
+      color: #ff6b6b;
+    }
     .hero h1 {
       font-size: 2.8em;
       font-weight: 900;
@@ -109,6 +159,10 @@ home_page = '''<!DOCTYPE html>
       margin: 0 auto 30px;
       font-size: 18px;
       color: #555;
+      transition: color 0.3s ease;
+    }
+    body.dark .hero p {
+      color: #bbb;
     }
     .button-group {
       display: flex;
@@ -131,6 +185,12 @@ home_page = '''<!DOCTYPE html>
       text-align: center;
       flex: 1 1 260px;
       animation: fadeInUp 1s ease;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+    body.dark .feature-box {
+      background: #222;
+      color: #ddd;
+      box-shadow: 0 4px 15px rgba(0, 255, 255, 0.15);
     }
     .feature-box h3 {
       margin-bottom: 10px;
@@ -167,6 +227,11 @@ home_page = '''<!DOCTYPE html>
       <a href="# "> </a>
     </nav>
     <button class="cta-btn" onclick="window.open('https://discord.com/invite/hCTCQwPKd3', '_blank')">Join Discord</button>
+    <select class="theme-select" id="themeSelect" aria-label="Select Theme">
+      <option value="system">System</option>
+      <option value="light">Light</option>
+      <option value="dark">Dark</option>
+    </select>
   </header>
 
   <section class="hero">
@@ -194,8 +259,62 @@ home_page = '''<!DOCTYPE html>
       <p>Community-approved and always improving.</p>
     </div>
   </section>
+
+  <script>
+    const themeSelect = document.getElementById('themeSelect');
+
+    function applyTheme(theme) {
+      if (theme === 'light') {
+        document.body.classList.remove('dark');
+        setMetaThemeColor('#ff4d4f');
+      } else if (theme === 'dark') {
+        document.body.classList.add('dark');
+        setMetaThemeColor('#222222');
+      } else if (theme === 'system') {
+        // Match system preference
+        const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (isDark) {
+          document.body.classList.add('dark');
+          setMetaThemeColor('#222222');
+        } else {
+          document.body.classList.remove('dark');
+          setMetaThemeColor('#ff4d4f');
+        }
+      }
+      // Save preference
+      localStorage.setItem('themePreference', theme);
+    }
+
+    function setMetaThemeColor(color) {
+      let meta = document.querySelector('meta[name="theme-color"]');
+      if (!meta) {
+        meta = document.createElement('meta');
+        meta.name = "theme-color";
+        document.head.appendChild(meta);
+      }
+      meta.content = color;
+    }
+
+    // Load saved preference or default to system
+    const savedTheme = localStorage.getItem('themePreference') || 'system';
+    themeSelect.value = savedTheme;
+    applyTheme(savedTheme);
+
+    // Listen for changes in dropdown
+    themeSelect.addEventListener('change', (e) => {
+      applyTheme(e.target.value);
+    });
+
+    // Listen for system theme changes if system is selected
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+      if (themeSelect.value === 'system') {
+        applyTheme('system');
+      }
+    });
+  </script>
 </body>
 </html>
+
 '''
  
 locked_page = '''...'''  # keep your current locked_page string
@@ -332,6 +451,25 @@ def execute():
                 font-size: 0.9em;
             }
         }
+        #maintenanceOverlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 15, 15, 0.95);
+      color: #ff4d4f;
+      font-family: 'Inter', sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      font-size: 1.8rem;
+      text-align: center;
+      padding: 20px;
+      user-select: none;
+    }
+    body.no-scroll {
+      overflow: hidden;
+    }
     </style>
 </head>
 <body>
