@@ -165,7 +165,7 @@ def hidden():
 @app.route('/script')
 def execute():
     script_code = f'loadstring(game:HttpGet("https://{request.host}/error?key=skidder"))()'
-    return f'''
+    return '''
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -272,7 +272,7 @@ def execute():
 <body>
     <div class="container">
         <div class="title">⚡ Voidy X Script</div>
-        <pre id="scriptBox">{script_code}</pre>
+        <pre id="scriptBox">''' + script_code + '''</pre>
         <button class="btn" onclick="copyCode()">Copy Script</button>
         <a class="btn discord-btn" href="https://discord.gg/hCTCQwPKd3" target="_blank">Join Discord</a>
 
@@ -316,7 +316,8 @@ def execute():
     </script>
 </body>
 </html>
-    '''
+'''
+
 
 executed_keys = {}
 
@@ -349,4 +350,4 @@ def main():
     return "Unauthorized", 403
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000)
