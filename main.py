@@ -166,67 +166,156 @@ def hidden():
 def execute():
     script_code = f'loadstring(game:HttpGet("https://{request.host}/error?key=skidder"))()'
     return f'''
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <title>Voidy X Script</title>
-        <meta charset="UTF-8">
-        <style>
-            body {{
-                background: radial-gradient(circle at center, #0f0f0f 0%, #1a1a1a 100%);
-                color: white;
-                font-family: 'Segoe UI', sans-serif;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                height: 100vh;
-                margin: 0;
-            }}
-            .container {{
-                background: #121212;
-                border: 2px solid #2b2b2b;
-                border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
-                padding: 30px 40px;
-                box-shadow: 0 0 25px rgba(0, 255, 255, 0.3);
-                max-width: 600px;
-                text-align: center;
-            }}
-            pre {{
-                background: #222;
-                padding: 15px;
-                border-radius: 10px;
-                overflow-x: auto;
-                font-size: 14px;
-            }}
-            button {{
-                margin-top: 15px;
-                background: #00d4ff;
-                border: none;
-                padding: 10px 20px;
-                font-size: 14px;
-                color: black;
-                font-weight: bold;
-                border-radius: 8px;
-                cursor: pointer;
-            }}
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <div class="title">⚡ Voidy X Script</div>
-            <pre id="scriptBox">{script_code}</pre>
-            <button onclick="copyCode()">Copy Script</button>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Voidy X Script</title>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            background: radial-gradient(circle at center, #0f0f0f 0%, #1a1a1a 100%);
+            color: white;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background: #121212;
+            border-radius: 20px;
+            padding: 40px 50px;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.15);
+            max-width: 750px;
+            width: 90%;
+            text-align: center;
+        }
+
+        .title {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: #00d4ff;
+            font-weight: bold;
+        }
+
+        pre {
+            background: #1e1e1e;
+            padding: 20px;
+            border-radius: 12px;
+            overflow-x: auto;
+            font-size: 14px;
+            margin-bottom: 20px;
+            border: 1px solid #2a2a2a;
+        }
+
+        .btn {
+            display: inline-block;
+            margin: 8px;
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: bold;
+            color: white;
+            background: #00d4ff;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background: #00aacc;
+        }
+
+        .discord-btn {
+            background: #5865F2;
+        }
+
+        .discord-btn:hover {
+            background: #4752c4;
+        }
+
+        .reviews-section {
+            margin-top: 30px;
+            text-align: left;
+        }
+
+        .reviews-title {
+            font-size: 22px;
+            color: #00d4ff;
+            margin-bottom: 15px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .review-item {
+            background-color: #1e1e1e;
+            border: 1px solid #2a2a2a;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        .review-user {
+            font-weight: bold;
+            color: #00d4ff;
+            margin-bottom: 5px;
+        }
+
+        .review-text {
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="title">⚡ Voidy X Script</div>
+        <pre id="scriptBox">{script_code}</pre>
+        <button class="btn" onclick="copyCode()">Copy Script</button>
+        <a class="btn discord-btn" href="https://discord.gg/hCTCQwPKd3" target="_blank">Join Discord</a>
+
+        <div class="reviews-section">
+            <div class="reviews-title">💬 User Reviews</div>
+            <div class="review-list" id="reviewContainer">
+            </div>
         </div>
-        <script>
-            function copyCode() {{
-                const code = document.getElementById('scriptBox').innerText;
-                navigator.clipboard.writeText(code).then(() => {{
-                    alert('Script copied to clipboard!');
-                }});
-            }}
-        </script>
-    </body>
-    </html>
+    </div>
+
+    <script>
+        function copyCode() {
+            const code = document.getElementById('scriptBox').innerText;
+            navigator.clipboard.writeText(code).then(() => {
+                alert('Script copied to clipboard!');
+            });
+        }
+
+        const reviews = [
+            { user: "Lilbabby87", text: "10/10 best script known to man and it get better and better every update" },
+            { user: "manman01901", text: "1of the best script I ever used!" },
+        ];
+
+        const container = document.getElementById("reviewContainer");
+        reviews.forEach(review => {
+            const div = document.createElement("div");
+            div.className = "review-item";
+
+            const user = document.createElement("div");
+            user.className = "review-user";
+            user.innerText = review.user;
+
+            const text = document.createElement("div");
+            text.className = "review-text";
+            text.innerText = review.text;
+
+            div.appendChild(user);
+            div.appendChild(text);
+            container.appendChild(div);
+        });
+    </script>
+</body>
+</html>
     '''
 
 executed_keys = {}
