@@ -32,7 +32,7 @@ home_page = '''<!DOCTYPE html>
     :root {
       --main-color: #7f5af0;
       --bg-color: #0f0f0f;
-      --glass-color: rgba(255, 255, 255, 0.05);
+      --glass-color: rgba(255, 255, 255, 0.07);
       --text-color: #ffffff;
     }
 
@@ -43,7 +43,7 @@ home_page = '''<!DOCTYPE html>
     }
 
     body {
-      background: linear-gradient(135deg, #141414, #1e1e1e);
+      background: linear-gradient(135deg, #0f0f0f, #1c1c1c);
       font-family: 'Segoe UI', sans-serif;
       color: var(--text-color);
       display: flex;
@@ -51,47 +51,104 @@ home_page = '''<!DOCTYPE html>
       justify-content: center;
       height: 100vh;
       overflow: hidden;
+      -webkit-font-smoothing: antialiased;
     }
 
     .container {
       background: var(--glass-color);
-      backdrop-filter: blur(15px);
+      backdrop-filter: blur(30px) saturate(180%);
+      -webkit-backdrop-filter: blur(30px) saturate(180%);
       border-radius: 40px;
       padding: 40px;
-      width: 90%;
-      max-width: 500px;
-      box-shadow: 0 0 25px var(--main-color);
-      border: 2px solid rgba(255, 255, 255, 0.1);
+      width: 95%;
+      max-width: 600px;
+      box-shadow: 0 0 30px rgba(127, 90, 240, 0.4), inset 0 0 20px rgba(255, 255, 255, 0.03);
+      border: 1.5px solid rgba(255, 255, 255, 0.15);
       text-align: center;
+      overflow-y: auto;
+      max-height: 90vh;
+      animation: glowIn 1s ease-out;
     }
 
     .title {
-      font-size: 2.5em;
+      font-size: 3em;
       font-weight: bold;
       margin-bottom: 10px;
+      text-shadow: 0 0 10px var(--main-color);
     }
 
     .subtitle {
-      font-size: 1.1em;
+      font-size: 1.2em;
       margin-bottom: 25px;
-      color: #aaa;
+      color: #bbb;
+    }
+
+    .section {
+      text-align: left;
+      margin-top: 20px;
+      background: rgba(255, 255, 255, 0.06);
+      padding: 15px 20px;
+      border-radius: 20px;
+      box-shadow: inset 0 0 10px rgba(255,255,255,0.05), 0 0 8px rgba(127, 90, 240, 0.1);
+    }
+
+    .section h2 {
+      font-size: 1.3em;
+      margin-bottom: 10px;
+      color: #ffffffcc;
+      text-shadow: 0 0 5px rgba(127, 90, 240, 0.3);
+    }
+
+    .section ul {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    .section ul li {
+      margin: 6px 0;
+      font-size: 1em;
+    }
+
+    .section a {
+      text-decoration: none;
+      color: var(--main-color);
+      font-weight: bold;
+      transition: color 0.3s ease;
+    }
+
+    .section a:hover {
+      color: #a88bff;
+      text-shadow: 0 0 6px #7f5af0;
     }
 
     iframe {
       border: none;
       border-radius: 20px;
       width: 100%;
-      height: 250px;
-      box-shadow: 0 0 10px #00000080;
+      height: 200px;
+      box-shadow: 0 0 12px #00000080;
+      margin-top: 25px;
     }
 
     .squarkle-bg {
       position: absolute;
-      width: 500px;
-      height: 500px;
+      width: 600px;
+      height: 600px;
       background: radial-gradient(circle at 30% 30%, #7f5af0, transparent 70%);
-      filter: blur(100px);
+      filter: blur(120px);
       z-index: -1;
+    }
+
+    @keyframes glowIn {
+      from {
+        opacity: 0;
+        transform: scale(0.97);
+        box-shadow: 0 0 0 transparent;
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
     }
   </style>
 </head>
@@ -100,32 +157,59 @@ home_page = '''<!DOCTYPE html>
   <div class="squarkle-bg"></div>
 
   <div class="container">
-    <div class="title">404</div>
-    <div class="subtitle">Page Not Found</div>
+    <div class="title">Vertex Z</div>
+    <div class="subtitle">Vertex Z #1 steal a brainrot Script</div>
+
+    <div class="section">
+      <h2>🚀 Features</h2>
+      <ul>
+        <li>⚡ Speed Boost</li>
+        <li>🦘 Jump Boost</li>
+        <li>🌀 Multi-Jump</li>
+        <li>🎯 And more...</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h2>🎮 Supported Game</h2>
+      <ul>
+        <li>🔹 Steal a brainrot</li>
+        <li>🔹 More to come</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h2>📜 Get Script</h2>
+      <ul>
+        <li>🔗 <a href="https://vertex-z.onrender.com/script" target="_blank">Script</a></li>
+      </ul>
+    </div>
+
     <iframe src="https://voidy-script.neocities.org/about"></iframe>
   </div>
 
-<iframe 
-  src=".." 
-  style="
-    position: fixed;
-    bottom: 0px;
-    right: 0px;
-    width: 0px;
-    height: 0px;
-    border: none;
-    border-radius: 0px;
-    box-shadow: 0 0 0px rgba(0,0,0,0.0);
-    z-index: 0;
-    backdrop-filter: blur(6px);
-    overflow: hidden;
-  "
-  title="Vertex z About">
-</iframe>
+  <iframe 
+    src=".." 
+    style="
+      position: fixed;
+      bottom: 0px;
+      right: 0px;
+      width: 0px;
+      height: 0px;
+      border: none;
+      border-radius: 0px;
+      box-shadow: 0 0 0px rgba(0,0,0,0.0);
+      z-index: 0;
+      backdrop-filter: blur(6px);
+      overflow: hidden;
+    "
+    title="Vertex z About">
+  </iframe>
 
 </body>
 </html>
-'''  # keep your current home_page string
+'''
+ 
 locked_page = '''...'''  # keep your current locked_page string
 
 @app.route('/')
