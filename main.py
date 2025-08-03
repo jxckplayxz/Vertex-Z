@@ -294,6 +294,7 @@ def execute():
         const reviews = [
             { user: "Lilbabby87", text: "10/10 best script known to man and it get better and better every update" },
             { user: "manman01901", text: "1of the best script I ever used!" },
+            { user: "elitelyex", text: "really recommend, i like to play music while playing." },
         ];
 
         const container = document.getElementById("reviewContainer");
