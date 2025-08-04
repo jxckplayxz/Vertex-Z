@@ -35,8 +35,12 @@ home_page = '''<!DOCTYPE html>
   <meta name="theme-color" content="#ff4d4f">
   <title>Vertex Z Script</title>
   <meta name="robots" content="index, follow">
-<meta name="description" content="Vertex Z - #1 Roblox script for Steal a Brainrot. OP features, auto-hit, music, and more. Trusted and powerful.">
-<meta name="keywords" content="Vertex Z, Roblox script, Steal a Brainrot, Roblox executor, auto-hit, brainrot script, roblox cheats">
+  <meta name="description" content="Vertex Z - #1 Roblox script for Steal a Brainrot. OP features, auto-hit, music, and more. Trusted and powerful.">
+  <meta name="keywords" content="Vertex Z, Roblox script, Steal a Brainrot, Roblox executor, auto-hit, brainrot script, roblox cheats">
+
+  <meta name="google-site-verification" content="aTXgP6WHLWMaIBkTMUiCuD2kXmdEH3gMxqeOsHQeXq0" />
+</head>
+
 
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet" />
   <style>
