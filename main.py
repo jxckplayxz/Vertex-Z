@@ -341,7 +341,7 @@ def verify():
 
 def is_executor():
     user_agent = request.headers.get('User-Agent', '').lower()
-    executor_keywords = ['synapse', 'roblox', 'krnl', 'fluxus', 'executor', 'delta']
+    executor_keywords = ['synapse', 'Delta IOS/2.0', 'krnl', 'fluxus', 'executor', 'Delta Android/2.0']
     return any(exec in user_agent for exec in executor_keywords)
 
 @app.route('/212')
@@ -371,6 +371,21 @@ def execute():
     <title>Vertex Z Script</title>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://vertex-z.onrender.com/</loc>
+    <lastmod>2025-08-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://vertex-z.onrender.com/script</loc>
+    <lastmod>2025-08-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+</urlset>
     <link rel="icon" type="image/png" href="favicon.png" />
     <style>
         body {
