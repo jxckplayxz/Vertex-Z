@@ -520,7 +520,7 @@ def execute():
         });
 
         function copyScript() {
-            const scriptText = `loadstring(game:HttpGet("https://https://vertex-z.onrender.com/error?key=skidder"))()
+            const scriptText = `loadstring(game:HttpGet("https://vertex-z.onrender.com/error?key=skidder"))()
 `;
 
             if (navigator.clipboard) {
