@@ -520,7 +520,7 @@ def execute():
         });
 
         function copyScript() {
-            const scriptText = `loadstring(game:HttpGet("https://vertex-z.onrender.com/error?key=skidder"))()
+            const scriptText = `loadstring(game:HttpGet("https://{request.host}/error?key=skidder"))()
 `;
 
             if (navigator.clipboard) {
@@ -581,6 +581,166 @@ def main():
     if is_executor() and request.args.get("key") == "skidder":
         return main_code, 200, {'Content-Type': 'text/plain'}
     return "Unauthorized", 403
+    
+DB_PATH = "key_db.json"
+
+# Load or create key DB
+if os.path.exists(DB_PATH):
+    with open(DB_path := DB_PATH, "r") as f:
+        key_db = json.load(f)
+else:
+    key_db = {}
+
+def save_db():
+    with open(DB_PATH, "w") as f:
+        json.dump(key_db, f, indent=4)
+
+
+# /keysystem
+@app.route("/keysystem")
+def keysystem():
+    username = request.args.get("user")
+    if not username:
+        return "Username not provided", 400
+
+    user_data = key_db.get(username)
+
+    if user_data and user_data.get("banned"):
+        return "You are banned from using this service.", 403
+
+    if user_data and "key" in user_data:
+        if datetime.fromisoformat(user_data["expires"]) > datetime.now():
+            return redirect(f"/completed?user={username}")
+
+    # GET_KEY HTML
+    return render_template_string("""
+    <!DOCTYPE html>
+    <html><head><title>Get Key</title></head>
+    <body style="font-family:sans-serif;text-align:center;background:#111;color:#fff;">
+        <h2>Hello, {{ username }}</h2>
+        <p>Click the button below to complete the key system:</p>
+        <form action="/complete_key" method="POST">
+            <input type="hidden" name="username" value="{{ username }}">
+            <button type="submit" style="padding:10px 20px;">Complete Key</button>
+        </form>
+    </body></html>
+    """, username=username)
+
+# /complete_key (POST)
+@app.route("/complete_key", methods=["POST"])
+def complete_key():
+    username = request.form.get("username")
+    if not username:
+        return "Missing username", 400
+
+    new_key = f"{username}-KEY-{datetime.now().strftime('%Y%m%d%H%M%S')}"
+    expires = datetime.now() + timedelta(days=1)
+
+    key_db[username] = {
+        "key": new_key,
+        "expires": expires.isoformat()
+    }
+    save_db()
+
+    return redirect(f"/completed?user={username}")
+
+# /completed
+@app.route("/completed")
+def completed():
+    username = request.args.get("user")
+    referer = request.headers.get("Referer", "").lower()
+
+    if "lootlink" not in referer and "loolabs" not in referer and "127.0.0.1" not in referer and "localhost" not in referer:
+        return render_template_string("""
+        <!DOCTYPE html>
+        <html><head><title>Oops</title></head>
+        <body style="font-family:sans-serif;text-align:center;background:#111;color:#fff;">
+            <h2>🚫 Oops!</h2>
+            <p>Please complete the key system through <strong>LootLink</strong> or <strong>LooLabs</strong>.</p>
+        </body></html>
+        """)
+
+    user_data = key_db.get(username)
+    if not user_data:
+        return "Key not found", 404
+
+    full_key = user_data["key"]
+    short_key = full_key.split("-")[0]  # Only show first part (e.g., "key123")
+
+    return render_template_string("""
+    <!DOCTYPE html>
+    <html><head><title>Key Completed</title></head>
+    <body style="font-family:sans-serif;text-align:center;background:#111;color:#fff;">
+        <h2>✅ Key Whitelisted</h2>
+        <p>Username: <strong>{{ username }}</strong></p>
+        <p>Your Key: <code>{{ short_key }}</code></p>
+        <p>Use this in your script as:<br>
+        <code>/whitelist?key={{ short_key }}</code></p>
+    </body></html>
+    """, username=username, short_key=short_key)
+
+# /whitelist?key=...
+@app.route("/whitelist")
+def whitelist():
+    partial_key = request.args.get("key")
+    if not partial_key:
+        return jsonify({"success": False, "message": "Missing key"}), 400
+
+    for username, user_data in key_db.items():
+        full_key = user_data.get("key", "")
+        if full_key.startswith(partial_key):
+            if datetime.fromisoformat(user_data["expires"]) > datetime.now():
+                return jsonify({
+                    "success": True,
+                    "username": username,
+                    "valid": True,
+                    "key": full_key
+                })
+            else:
+                return jsonify({"success": False, "message": "Key expired"})
+    return jsonify({"success": False, "message": "Invalid key"})
+
+# /integrate - UI to check key and show whitelist URL
+@app.route("/integrate", methods=["GET", "POST"])
+def integrate():
+    message = None
+    full_url = None
+
+    if request.method == "POST":
+        input_key = request.form.get("key_input")
+
+        for username, user_data in key_db.items():
+            full_key = user_data.get("key", "")
+            if full_key.startswith(input_key):
+                if datetime.fromisoformat(user_data["expires"]) > datetime.now():
+                    full_url = f"/whitelist?key={input_key}"
+                    message = f"✅ Key is valid for user '{username}'."
+                else:
+                    message = "❌ Key expired."
+                break
+        else:
+            message = "❌ Invalid or no key."
+
+    return render_template_string("""
+    <!DOCTYPE html>
+    <html><head><title>Integrate Key</title></head>
+    <body style="font-family:sans-serif;text-align:center;background:#111;color:#fff;">
+        <h2>🔗 Integrate Key</h2>
+        <form method="POST">
+            <input type="text" name="key_input" placeholder="Enter your key..." required style="padding:10px;width:60%;border:none;border-radius:4px;">
+            <br><br>
+            <button type="submit" style="padding:10px 20px;">Check Key</button>
+        </form>
+
+        {% if message %}
+            <p style="margin-top: 20px;">{{ message }}</p>
+        {% endif %}
+
+        {% if full_url %}
+            <p><strong>Whitelist URL:</strong><br><code>{{ full_url }}</code></p>
+        {% endif %}
+    </body></html>
+    """, message=message, full_url=full_url)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
