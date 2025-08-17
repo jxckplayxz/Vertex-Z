@@ -2,9 +2,11 @@ from flask import Flask, request, session, redirect, url_for, render_template_st
 from werkzeug.utils import secure_filename
 import os
 import time
+from flask import Flask, render_template, request, redirect, url_for, session
 
 app = Flask(__name__)
-app.secret_key = 'super-secret-key'
+app.secret_key = "your_secret_key_here"
+
 
 # Upload config
 UPLOAD_FOLDER = 'uploads'
