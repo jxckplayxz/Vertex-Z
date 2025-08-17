@@ -790,16 +790,17 @@ html_panel = """
 </html>
 """
 
+# Admin updates
+updates = []
+ADMIN_PASSWORD = "admin21"
+
 @app.route("/api-sending")
 def admin_panel():
     return render_template_string(html_panel, password=ADMIN_PASSWORD)
 
 @app.route("/updates.json", methods=["GET"])
 def get_updates_json():
-    if updates:
-        # return full list (so you can use both update + notification in Lua)
-        return jsonify(updates)
-    return jsonify([])
+    return jsonify(updates)
 
 @app.route("/add", methods=["POST"])
 def add_update():
