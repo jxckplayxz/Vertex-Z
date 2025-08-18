@@ -792,7 +792,7 @@ html_panel = """
 </html>
 """
 
-@app.route("/")
+@app.route("/S-m-e")
 def admin_panel():
     return render_template_string(html_panel, password=ADMIN_PASSWORD)
 
