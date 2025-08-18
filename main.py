@@ -1,4 +1,5 @@
 from flask import Flask, request, session, redirect, url_for, render_template_string, send_from_directory
+from flask import Flask, request, jsonify, render_template_string
 from werkzeug.utils import secure_filename
 import os
 import time
