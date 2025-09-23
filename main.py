@@ -12,20 +12,19 @@ import os
 import time
 import threading
 import discord
-import random
 from discord.ext import commands
 import base64
 from discord import app_commands
 import string
+import random
 import asyncio
 import requests
-from datetime import datetime 
+from datetime import datetime
 
 intents = discord.Intents.default()
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-
-XOR_KEY = b"8b64b53738b7e0f3f55dce35f598c4c37d3d0b670fcc6db313fe90c4be45e747"  # jack never share this shit dead ass like never even copy it to your clipboard
+XOR_KEY = b"8b64b53738b7e0f3f55dce35f598c4c37d3d0b670fcc6db313fe90c4be45e747"
 BYPASS_THUMBNAIL_URL = "https://raw.githubusercontent.com/prototbh/TEMP/refs/heads/main/Screenshot%202025-09-19%20210530.png"
 SECURITY_ALERT_CHANNEL_ID = 1419756627162304622
 
@@ -79,11 +78,9 @@ async def on_ready():
     except Exception as e:
         print(f"Failed to sync commands: {e}")
 
-
 @bot.tree.command(name="ping", description="Replies with Pong!")
 async def ping(interaction: discord.Interaction):
     await interaction.response.send_message("Pong!")
-
 
 class PaymentSelect(discord.ui.Select):
     def __init__(self):
@@ -1923,6 +1920,8 @@ script_page = """<!DOCTYPE html>
 </body>
 </html>
 """
+
+
 html_panel = """<!DOCTYPE html>
 <html>
 <head>
@@ -2100,6 +2099,7 @@ html_panel = """<!DOCTYPE html>
 </body>
 </html>
 """
+
 
 KEY_PAGE = """
 <!DOCTYPE html>
