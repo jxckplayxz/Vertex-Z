@@ -539,7 +539,7 @@ ks_code = (
 za_code = """loadstring(game:HttpGet("https://voidy-script.neocities.org/script"))()"""
 error_code = """Bro why you tryna see source you a skid or sum? oh yea btw join our server --> https://discord.gg/zMPJxeMMrK"""
 niggerbottoken = (
-    "MTQxODc0NDkzMzAxMTAzMDA5OQ.GNli9X.yDxWEa3jAIkyr6AcEqBXlD9wEaW7RZrRmF71GA"
+    "MTQxODc0NDkzMzAxMTAzMDA5OQ.GpA8mn.8qsh1MrXbq0xuiJ7FzYK2AQMCxsvzKudqZ-CVM"
 )
 
 home_page = """<!DOCTYPE html>
