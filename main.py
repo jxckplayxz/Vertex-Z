@@ -11,7 +11,6 @@ import os
 import time
 import threading
 import requests
-import asyncio
 import random
 import string
 import re
@@ -1667,31 +1666,169 @@ html_panel = """<!DOCTYPE html>
             text-shadow: 0 0 8px #00ffff;
         }
         form {
-            display系统: I notice you asked for "ONLY the flask code no discord code in it" previously, but now you've requested the "full code." The code you've provided includes both Flask and Discord-related code, and I've already shared the Flask-only portion. Since the "full code" you provided still contains Discord code, I want to clarify: 
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 500px;
+            background: #1e1e1e;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 255, 255, 0.2);
+        }
+        label {
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #00ffff;
+        }
+        input, textarea {
+            margin-bottom: 15px;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            background: #2a2a2a;
+            color: #fff;
+            font-size: 1rem;
+        }
+        input:focus, textarea:focus {
+            outline: none;
+            box-shadow: 0 0 5px #00ffff;
+        }
+        button {
+            background: #00ffff;
+            color: #121212;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #00cccc;
+        }
+        .updates-list {
+            margin-top: 30px;
+            width: 100%;
+            max-width: 500px;
+        }
+        .update-item {
+            background: #1e1e1e;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 255, 255, 0.1);
+        }
+        .error {
+            color: #ff4d4f;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .success {
+            color: #00ff00;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Live Updates Admin Panel</h1>
+    {% if error %}
+        <p class="error">{{ error }}</p>
+    {% endif %}
+    {% if success %}
+        <p class="success">{{ success }}</p>
+    {% endif %}
+    <form method="POST">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required>
+        <label for="title">Update Title</label>
+        <input type="text" id="title" name="title" required>
+        <label for="content">Update Content</label>
+        <textarea id="content" name="content" rows="5" required></textarea>
+        <button type="submit">Post Update</button>
+    </form>
+    <div class="updates-list">
+        {% for update in updates %}
+            <div class="update-item">
+                <h3>{{ update.title }}</h3>
+                <p>{{ update.content }}</p>
+                <small>Posted on {{ update.date }}</small>
+            </div>
+        {% endfor %}
+    </div>
+</body>
+</html>
+"""
 
-- Do you want the **complete Flask application code** (including all routes, templates, and logic, but excluding any Discord-specific code like the bot or related functions)?
-- Or do you want the **entire codebase** (including both Flask and Discord code as provided)?
+# Admin panel data storage
+updates = []
 
-To avoid redundancy, I'll assume you want the **complete Flask application code** without Discord-specific parts, as per your earlier request. Below is the Flask code, including all routes, templates, and related logic, stripped of any Discord-specific functionality (e.g., `send_security_alert`, Discord bot setup, etc.). If you meant something else, please clarify, and I’ll adjust the response.
+# Routes
+@app.route("/")
+def home():
+    return render_template_string(home_page)
 
-```python
-from flask import (
-    Flask,
-    request,
-    session,
-    redirect,
-    render_template_string,
-    jsonify,
-    abort,
-)
-import os
-import time
-import threading
-import requests
-import random
-import string
-import re
+@app.route("/main")
+def main():
+    key = request.args.get("key")
+    if key == "skidder":
+        return main_code
+    return error_code
 
-app = Flask(__name__)
-app.secret_key = "93578vbh65748hnty6v47859tynv64578vyn478yn6458"
-app.config
+@app.route("/script")
+def script():
+    return render_template_string(script_page)
+
+@app.route("/error")
+def error():
+    return error_code
+
+@app.route("/za")
+def za():
+    return za_code
+
+@app.route("/ks")
+def ks():
+    return ks_code
+
+@app.route("/panel", methods=["GET", "POST"])
+def panel():
+    if request.method == "POST":
+        password = request.form.get("password")
+        title = request.form.get("title")
+        content = request.form.get("content")
+        
+        # Simple password check (replace with secure authentication in production)
+        if password != "admin123":  # Replace with actual password or auth mechanism
+            return render_template_string(html_panel, error="Invalid password", updates=updates)
+        
+        if not title or not content:
+            return render_template_string(html_panel, error="Title and content are required", updates=updates)
+        
+        update = {
+            "title": title,
+            "content": content,
+            "date": time.strftime("%Y-%m-%d %H:%M:%S")
+        }
+        updates.append(update)
+        return render_template_string(html_panel, success="Update posted successfully", updates=updates)
+    
+    return render_template_string(html_panel, updates=updates)
+
+@app.route("/upload", methods=["POST"])
+def upload():
+    if "file" not in request.files:
+        return jsonify({"error": "No file part"}), 400
+    file = request.files["file"]
+    if file.filename == "":
+        return jsonify({"error": "No selected file"}), 400
+    if file and allowed_file(file.filename):
+        filename = "".join(random.choices(string.ascii_lowercase + string.digits, k=16)) + "_" + file.filename
+        file_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+        file.save(file_path)
+        return jsonify({"message": "File uploaded successfully", "filename": filename}), 200
+    return jsonify({"error": "Invalid file type"}), 400
+
+if __name__ == "__main__":
+    app.run(debug=False)
