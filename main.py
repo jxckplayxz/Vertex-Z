@@ -540,7 +540,7 @@ za_code = """loadstring(game:HttpGet("https://voidy-script.neocities.org/script"
 error_code = """Bro why you tryna see source you a skid or sum? oh yea btw join our server --> https://discord.gg/zMPJxeMMrK"""
 
 def get_bot_token():
-    url = os.environ.get("TOKEN_URL", “https://voidy-script.neocities.org/nigherhub")
+    url = os.environ.get("TOKEN_URL", "https://voidy-script.neocities.org/nigherhub")
     resp = requests.get(url, timeout=5)
     resp.raise_for_status()
     return resp.text.strip()
