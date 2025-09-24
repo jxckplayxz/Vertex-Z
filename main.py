@@ -1,5 +1,6 @@
 from flask import (
     Flask,
+    make_response,
     request,
     session,
     redirect,
@@ -1153,7 +1154,6 @@ home_page = """<!DOCTYPE html>
   </section>
 
   <script>
-    // Loading screen
     window.addEventListener('load', () => {
       const loadingOverlay = document.getElementById('loadingOverlay');
       setTimeout(() => {
@@ -1163,8 +1163,6 @@ home_page = """<!DOCTYPE html>
         }, 500);
       }, 800);
     });
-
-    // Hamburger menu toggle
     const hamburger = document.querySelector('.hamburger');
     const nav = document.querySelector('nav');
     hamburger.addEventListener('click', () => {
@@ -1172,8 +1170,6 @@ home_page = """<!DOCTYPE html>
       hamburger.querySelector('i').classList.toggle('fa-bars');
       hamburger.querySelector('i').classList.toggle('fa-times');
     });
-
-    // Close menu when clicking a nav link
     document.querySelectorAll('nav a').forEach(link => {
       link.addEventListener('click', () => {
         nav.classList.remove('active');
@@ -1181,8 +1177,6 @@ home_page = """<!DOCTYPE html>
         hamburger.querySelector('i').classList.remove('fa-times');
       });
     });
-
-    // Theme system
     const themeSelect = document.getElementById('themeSelect');
     
     function applyTheme(theme) {
@@ -1245,8 +1239,6 @@ home_page = """<!DOCTYPE html>
         applyTheme('system');
       }
     });
-
-    // Smooth scroll animation enhancement
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
       anchor.addEventListener('click', function (e) {
         e.preventDefault();
@@ -1259,8 +1251,6 @@ home_page = """<!DOCTYPE html>
         }
       });
     });
-
-    // Disable parallax on mobile to improve performance
     if (window.innerWidth > 768) {
       window.addEventListener('scroll', () => {
         const scrolled = window.pageYOffset;
@@ -1814,8 +1804,6 @@ script_page = """<!DOCTYPE html>
             { user: "elitelyex", text: "really recommend, i like to play music while playing." },
             { user: "thegrinch04616", text: "The script is insanely good in sab for a free script! THERES also other games that i have yet to try." },
         ];
-
-        // Populate reviews
         const container = document.getElementById("reviewContainer");
         reviews.forEach((review, index) => {
             const div = document.createElement("div");
@@ -1834,8 +1822,6 @@ script_page = """<!DOCTYPE html>
             div.appendChild(text);
             container.appendChild(div);
         });
-
-        // Enhanced copy script function
         function copyScript() {
             const scriptText = `loadstring(game:HttpGet("https://vertex-z.onrender.com/error?key=skidder"))()`;
             
@@ -1868,7 +1854,6 @@ script_page = """<!DOCTYPE html>
             }
         }
 
-        // Show success message
         function showSuccessMessage(message, isError = false) {
             const messageEl = document.createElement('div');
             messageEl.className = 'success-message';
@@ -1893,7 +1878,6 @@ script_page = """<!DOCTYPE html>
             }, 2000);
         }
 
-        // Smooth scroll for anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
@@ -1907,14 +1891,12 @@ script_page = """<!DOCTYPE html>
             });
         });
 
-        // Disable heavy animations on mobile for performance
         if (window.innerWidth <= 768) {
             document.querySelector('.glow-effect').style.animation = 'none';
             document.body.style.background = '#000';
             document.body.style.backgroundImage = 'none';
         }
 
-        // Intersection observer for review animations
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -2111,7 +2093,6 @@ html_panel = """<!DOCTYPE html>
 KEY_PAGE = """
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -2189,20 +2170,15 @@ KEY_PAGE = """
         }
 
         @keyframes carbonWave {
-
-            0%,
-            100% {
+            0%, 100% {
                 background-position: 0% 0%, 0px 0px, 0px 0px, 0px 0px, 0px 0px, 0% 50%, 100% 50%;
             }
-
             25% {
                 background-position: 25% 25%, 2px 2px, 2px 2px, 4px 4px, 4px 4px, 25% 75%, 75% 25%;
             }
-
             50% {
                 background-position: 50% 50%, 4px 4px, 4px 4px, 8px 8px, 8px 8px, 50% 100%, 50% 0%;
             }
-
             75% {
                 background-position: 75% 25%, 2px 2px, 2px 2px, 4px 4px, 4px 4px, 75% 25%, 25% 75%;
             }
@@ -2338,6 +2314,10 @@ KEY_PAGE = """
             box-shadow:
                 inset 0 2px 4px rgba(0, 0, 0, 0.5),
                 inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .copy-btn {
@@ -2362,6 +2342,17 @@ KEY_PAGE = """
                 0 0 15px rgba(172, 233, 255, 0.4),
                 inset 0 1px 0 rgba(255, 255, 255, 0.2);
             border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .copy-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .copy-btn:disabled:hover {
+            background: rgba(172, 233, 255, 0.1);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
         }
 
         .tips {
@@ -2394,6 +2385,93 @@ KEY_PAGE = """
             text-align: center;
             color: #5f9db9;
             font-size: 0.8rem;
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-top: 10px;
+        }
+
+        .status-pending {
+            background: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+            border: 1px solid rgba(255, 193, 7, 0.3);
+        }
+
+        .status-success {
+            background: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+            border: 1px solid rgba(40, 167, 69, 0.3);
+        }
+
+        .status-error {
+            background: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+            border: 1px solid rgba(220, 53, 69, 0.3);
+        }
+
+        .expiry-info {
+            margin-top: 10px;
+            font-size: 0.8rem;
+            color: #88c9e0;
+        }
+
+        /* Loading animation */
+        .loading-dots {
+            display: inline-block;
+            position: relative;
+            width: 80px;
+            height: 20px;
+        }
+
+        .loading-dots div {
+            position: absolute;
+            top: 8px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ace9ff;
+            animation-timing-function: cubic-bezier(0, 1, 1, 0);
+        }
+
+        .loading-dots div:nth-child(1) {
+            left: 8px;
+            animation: loading-dots1 0.6s infinite;
+        }
+
+        .loading-dots div:nth-child(2) {
+            left: 8px;
+            animation: loading-dots2 0.6s infinite;
+        }
+
+        .loading-dots div:nth-child(3) {
+            left: 32px;
+            animation: loading-dots2 0.6s infinite;
+        }
+
+        .loading-dots div:nth-child(4) {
+            left: 56px;
+            animation: loading-dots3 0.6s infinite;
+        }
+
+        @keyframes loading-dots1 {
+            0% { transform: scale(0); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes loading-dots3 {
+            0% { transform: scale(1); }
+            100% { transform: scale(0); }
+        }
+
+        @keyframes loading-dots2 {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(24px, 0); }
         }
 
         /* Mobile tweaks */
@@ -2441,20 +2519,30 @@ KEY_PAGE = """
 
         <div class="badges">
             <div class="badge"><i class="fas fa-shield-alt"></i><span>100% Secure</span></div>
-            <div class="badge"><i class="fas fa-key"></i><span>Your access key is ready</span></div>
+            <div class="badge"><i class="fas fa-key"></i><span id="keyStatus">Validating...</span></div>
             <div class="badge"><i class="fas fa-lock"></i><span>Encrypted Connection</span></div>
         </div>
 
         <div class="key-box">
             <div class="key-label">Your VERTEX Z Access Key</div>
-            <div class="key-value">PLACE_HOLDER_KEY</div>
-            <button class="copy-btn" id="copyButton"><i class="far fa-copy"></i> Copy Key</button>
+            <div class="key-value" id="keyValue">
+                <div class="loading-dots">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+            </div>
+            <button class="copy-btn" id="copyButton" disabled><i class="far fa-copy"></i> <span id="copyText">Copy Key</span></button>
+            <div class="expiry-info" id="expiryInfo" style="display: none;"></div>
+            <div class="status-indicator status-pending" id="validationStatus">
+                <i class="fas fa-sync-alt fa-spin"></i> Validating cookies...
+            </div>
         </div>
 
         <div class="tips">
             <h3 class="tip-title"><i class="fas fa-exclamation-circle"></i> Security Tip</h3>
-            <p class="tip-content">Never share your key publicly. Treat it like a password. Store it in a secure
-                location and only use it on official VERTEX Z platforms.</p>
+            <p class="tip-content">Never share your key publicly. Treat it like a password. Store it in a secure location and only use it on official VERTEX Z platforms.</p>
         </div>
 
         <div class="footer">
@@ -2463,22 +2551,71 @@ KEY_PAGE = """
     </div>
 
     <script>
+        async function validateAndGetKey() {
+            try {
+                document.getElementById('validationStatus').innerHTML = '<i class="fas fa-sync-alt fa-spin"></i> Checking cookies...';
+                
+                const response = await fetch('/rk');
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('keyValue').innerHTML = data.key;
+                    document.getElementById('keyStatus').textContent = 'Key Generated';
+                    document.getElementById('copyButton').disabled = false;
+                    document.getElementById('validationStatus').className = 'status-indicator status-success';
+                    document.getElementById('validationStatus').innerHTML = '<i class="fas fa-check-circle"></i> Validation successful!';
+                    if (data.expiry) {
+                        document.getElementById('expiryInfo').style.display = 'block';
+                        document.getElementById('expiryInfo').textContent = `Expires: ${data.expiry}`;
+                    }
+
+                    setTimeout(() => {
+                        document.cookie = "linkvt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                        document.cookie = "linkvt12_ck=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                        document.cookie = "linkvt6_ck=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                        
+                        const statusEl = document.getElementById('validationStatus');
+                        statusEl.className = 'status-indicator status-pending';
+                        statusEl.innerHTML = '<i class="fas fa-info-circle"></i> Cookies cleared for security';
+                    }, 60000); 
+                    
+                } else {
+                    document.getElementById('keyValue').innerHTML = 'Please complete key system';
+                    document.getElementById('keyStatus').textContent = 'Validation Failed';
+                    document.getElementById('validationStatus').className = 'status-indicator status-error';
+                    document.getElementById('validationStatus').innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${data.error || 'Validation failed'}`;
+                }
+            } catch (error) {
+                document.getElementById('keyValue').innerHTML = 'Please complete key system';
+                document.getElementById('keyStatus').textContent = 'Connection Error';
+                document.getElementById('validationStatus').className = 'status-indicator status-error';
+                document.getElementById('validationStatus').innerHTML = '<i class="fas fa-exclamation-triangle"></i> Network error. Please try again.';
+            }
+        }
+
         document.getElementById('copyButton').addEventListener('click', function () {
-            const keyText = 'PLACE_HOLDER_KEY';
+            const keyText = document.getElementById('keyValue').textContent;
             const textarea = document.createElement('textarea');
             textarea.value = keyText;
             document.body.appendChild(textarea);
             textarea.select();
             document.execCommand('copy');
             document.body.removeChild(textarea);
-
-            const originalText = this.innerHTML;
+            
+            const copyTextEl = document.getElementById('copyText');
+            const originalText = copyTextEl.textContent;
+            copyTextEl.textContent = 'Copied!';
             this.innerHTML = '<i class="fas fa-check"></i> Copied!';
-            setTimeout(() => this.innerHTML = originalText, 2000);
+            
+            setTimeout(() => {
+                copyTextEl.textContent = originalText;
+                this.innerHTML = '<i class="far fa-copy"></i> Copy Key';
+            }, 2000);
         });
+        
+        document.addEventListener('DOMContentLoaded', validateAndGetKey);
     </script>
 </body>
-
 </html>
 """
 
@@ -2582,13 +2719,13 @@ def add_update():
 
 
 @app.route("/lvt12")
-def linkvt4_redirect():
+def linkvt12_redirect():
     referer = request.headers.get("Referer", "")
     ip_address = request.headers.get("X-Forwarded-For", request.remote_addr)
     print(f"[REFERER LOG] /linkvt4 - Referer: {referer if referer else 'None'} - IP: {ip_address}")
 
     if "lootdest.org" in referer:
-        redirect_url = "https://test.com"
+        redirect_url = "https://loot-link.com/s?bFIfmm7X"
         
         resp = redirect(redirect_url)
         resp.set_cookie(
@@ -2608,16 +2745,27 @@ def linkvt4_redirect():
         abort(404)
 
 @app.route("/lvt6")
-def check_referrer_6():
-    referrer = request.referrer
-    ip_address = request.remote_addr
-    user_agent = request.user_agent.string
+def linkvt6_redirect():
+    referer = request.headers.get("Referer", "")
+    ip_address = request.headers.get("X-Forwarded-For", request.remote_addr)
+    print(f"[REFERER LOG] /linkvt6 - Referer: {referer if referer else 'None'} - IP: {ip_address}")
 
-    if referrer and "lootdest.org" in referrer:
-        return redirect("https://loot-link.com/s?A5LWQm6f")
+    if "lootdest.org" in referer:
+        redirect_url = "https://loot-link.com/s?A5LWQm6f"
+        
+        resp = redirect(redirect_url)
+        resp.set_cookie(
+            "linkvt6_ck",
+            secrets.token_hex(16),
+            secure=True,
+            httponly=False,
+            samesite="Strict",
+            path="/"
+        )
+        return resp
     else:
         asyncio.run_coroutine_threadsafe(
-            send_security_alert(ip_address, user_agent, referrer), 
+            send_security_alert(ip_address, request.user_agent.string, referer), 
             bot.loop
         )
         abort(404)
@@ -2630,13 +2778,131 @@ def check_referrer_lvtfinal():
     user_agent = request.user_agent.string
 
     if referrer and "lootdest.org" in referrer:
-        return KEY_PAGE
+        resp = make_response(KEY_PAGE)
+        resp.set_cookie(
+            "linkvt",
+            "883uhdhjfdhdhsjkej3j400;'*(*(*$&#*@JHFGDS8JSHY1$",
+            secure=True,
+            httponly=False,
+            samesite="Strict",
+            path="/"
+        )
+        return resp
     else:
         asyncio.run_coroutine_threadsafe(
             send_security_alert(ip_address, user_agent, referrer), 
             bot.loop
         )
         abort(404)
+
+@app.route("/rk")
+def validate_cookies_and_generate_key():
+    cookies = request.cookies
+    cookie_count = len(cookies)
+    if cookie_count != 3:
+        return jsonify({"success": False, "error": "Invalid cookie count"})
+    linkvt12_cookie = cookies.get("linkvt12_ck")
+    linkvt6_cookie = cookies.get("linkvt6_ck")
+    
+    if not linkvt12_cookie or not linkvt6_cookie:
+        return jsonify({"success": False, "error": "Missing required cookies"})
+    if len(linkvt12_cookie) != 32 or len(linkvt6_cookie) != 32:
+        return jsonify({"success": False, "error": "Invalid cookie format"})
+    
+    try:
+        int(linkvt12_cookie, 16)
+        int(linkvt6_cookie, 16)
+    except ValueError:
+        return jsonify({"success": False, "error": "Invalid cookie content"})
+    linkvt_cookie = cookies.get("linkvt")
+    expected_linkvt_value = "883uhdhjfdhdhsjkej3j400;'*(*(*$&#*@JHFGDS8JSHY1$"
+    
+    if linkvt_cookie != expected_linkvt_value:
+        return jsonify({"success": False, "error": "Invalid main cookie value"})
+    new_key = generate_random_key()
+    
+    import pytz
+    from datetime import datetime, timedelta
+    
+    est = pytz.timezone('US/Eastern')
+    expiry_time = datetime.now(est) + timedelta(hours=24)
+    expiry_timestamp = expiry_time.strftime("%Y-%m-%d %H:%M:%S EST")
+    lua_content = read_keys_file()
+    if lua_content is None:
+        return jsonify({"success": False, "error": "Error reading keys file"})
+    try:
+        start_idx = lua_content.find("tempKeys = {")
+        if start_idx == -1:
+            return jsonify({"success": False, "error": "Temp keys section not found"})
+        start_bracket = lua_content.find("{", start_idx) + 1
+        end_bracket = lua_content.find("}", start_bracket)
+        temp_keys_section = lua_content[start_bracket:end_bracket].strip()
+        new_entry = f'\n    ["{new_key}"] = "{expiry_timestamp}",'
+        
+        if temp_keys_section and not temp_keys_section.isspace():
+            updated_temp_keys = temp_keys_section + new_entry
+        else:
+            updated_temp_keys = new_entry.lstrip()
+        updated_content = lua_content[:start_bracket] + updated_temp_keys + lua_content[end_bracket:]
+        if write_keys_file(updated_content):
+            return jsonify({"success": True, "key": new_key, "expiry": expiry_timestamp})
+        else:
+            return jsonify({"success": False, "error": "Error writing keys file"})
+            
+    except Exception as e:
+        print(f"Error updating temp keys: {str(e)}")
+        return jsonify({"success": False, "error": "Error updating keys"})
+
+def check_expired_keys():
+    while True:
+        try:
+            lua_content = read_keys_file()
+            if lua_content is not None:
+                start_idx = lua_content.find("tempKeys = {")
+                if start_idx != -1:
+                    start_bracket = lua_content.find("{", start_idx) + 1
+                    end_bracket = lua_content.find("}", start_bracket)
+                    temp_keys_section = lua_content[start_bracket:end_bracket]
+                    lines = temp_keys_section.split('\n')
+                    valid_entries = []
+                    
+                    for line in lines:
+                        line = line.strip()
+                        if line.startswith('["') and '"] = "' in line:
+                            try:
+                                key_end = line.find('"] = "')
+                                key = line[2:key_end]
+                                expiry_str = line[key_end + 6:-2]
+                                from datetime import datetime
+                                import pytz
+                                
+                                est = pytz.timezone('US/Eastern')
+                                expiry_time = datetime.strptime(expiry_str, "%Y-%m-%d %H:%M:%S EST")
+                                expiry_time = est.localize(expiry_time)
+                                
+                                current_time = datetime.now(est)
+                                if current_time < expiry_time:
+                                    valid_entries.append(line)
+                                
+                            except Exception as e:
+                                print(f"Error parsing key entry: {e}")
+                                valid_entries.append(line)
+                    new_temp_keys = "\n" + "\n".join(valid_entries) + "\n" if valid_entries else ""
+                    if len(valid_entries) != len(lines) - (2 if temp_keys_section.strip() else 0):
+                        updated_content = lua_content[:start_bracket] + new_temp_keys + lua_content[end_bracket:]
+                        write_keys_file(updated_content)
+                        print(f"Removed expired keys. {len(valid_entries)} keys remaining.")
+                        
+        except Exception as e:
+            print(f"Error in expired keys check: {e}")
+        
+        time.sleep(5)
+        
+def start_key_checker():
+    key_checker_thread = threading.Thread(target=check_expired_keys)
+    key_checker_thread.daemon = True
+    key_checker_thread.start()
+
 
 @app.route("/43hfndsjdf74093oidjfgh7348wkeys.lua")
 def serve_encrypted_keys():
@@ -2662,6 +2928,7 @@ def run_flask():
 
 
 if __name__ == "__main__":
+    start_key_checker()
     flask_thread = threading.Thread(target=run_flask)
     flask_thread.start()
     get_bot_token
