@@ -19,10 +19,11 @@ from discord import app_commands
 import string
 import asyncio
 import requests
-from datetime import datetime
+from datetime import datetime 
 
 intents = discord.Intents.default()
 bot = commands.Bot(command_prefix="!", intents=intents)
+
 
 XOR_KEY = b"8b64b53738b7e0f3f55dce35f598c4c37d3d0b670fcc6db313fe90c4be45e747"  # jack never share this shit dead ass like never even copy it to your clipboard
 BYPASS_THUMBNAIL_URL = "https://raw.githubusercontent.com/prototbh/TEMP/refs/heads/main/Screenshot%202025-09-19%20210530.png"
@@ -78,9 +79,11 @@ async def on_ready():
     except Exception as e:
         print(f"Failed to sync commands: {e}")
 
+
 @bot.tree.command(name="ping", description="Replies with Pong!")
 async def ping(interaction: discord.Interaction):
     await interaction.response.send_message("Pong!")
+
 
 class PaymentSelect(discord.ui.Select):
     def __init__(self):
@@ -100,7 +103,7 @@ class PaymentSelect(discord.ui.Select):
         category = bot.get_channel(1397640585527169095)
         if category is None:
             await interaction.response.send_message(
-                "❌ Could not find the ticket category.", ephemeral=True
+                "âŒ Could not find the ticket category.", ephemeral=True
             )
             return
         overwrites = {
@@ -128,7 +131,7 @@ class PaymentSelect(discord.ui.Select):
             )
         except Exception as e:
             await interaction.response.send_message(
-                f"❌ Failed to create ticket channel: {e}", ephemeral=True
+                f"âŒ Failed to create ticket channel: {e}", ephemeral=True
             )
             return
         embed = discord.Embed(
@@ -159,8 +162,9 @@ class PaymentSelect(discord.ui.Select):
         )
 
         await interaction.response.send_message(
-            f"✅ Ticket created! Check {channel.mention}", ephemeral=True
+            f"âœ… Ticket created! Check {channel.mention}", ephemeral=True
         )
+
 
 class CloseTicketView(discord.ui.View):
     def __init__(self):
@@ -174,10 +178,11 @@ class CloseTicketView(discord.ui.View):
     ):
         if not any(role.id == 1397384666419433541 for role in interaction.user.roles):
             await interaction.response.send_message(
-                "❌ You don't have permission to close tickets.", ephemeral=True
+                "âŒ You don't have permission to close tickets.", ephemeral=True
             )
             return
         await interaction.channel.delete()
+
 
 class GetKeyButton(discord.ui.Button):
     def __init__(self):
@@ -185,8 +190,9 @@ class GetKeyButton(discord.ui.Button):
 
     async def callback(self, interaction: discord.Interaction):
         await interaction.response.send_message(
-            "Done ✅ Check your DMs.", ephemeral=True
+            "Done âœ… Check your DMs.", ephemeral=True
         )
+
 
 class RedeemKeyButton(discord.ui.Button):
     def __init__(self):
@@ -196,8 +202,9 @@ class RedeemKeyButton(discord.ui.Button):
 
     async def callback(self, interaction: discord.Interaction):
         await interaction.response.send_message(
-            "Done ✅ Check your DMs.", ephemeral=True
+            "Done âœ… Check your DMs.", ephemeral=True
         )
+
 
 class ControlPanelView(discord.ui.View):
     def __init__(self):
@@ -206,13 +213,14 @@ class ControlPanelView(discord.ui.View):
         self.add_item(GetKeyButton())
         self.add_item(RedeemKeyButton())
 
+
 @bot.tree.command(name="ctrlpan", description="Sends control panel")
 @app_commands.checks.has_permissions(administrator=True)
 async def ctrlpan(interaction: discord.Interaction):
     channel = bot.get_channel(CONTROL_PANEL_CHANNEL_ID)
     if channel is None:
         await interaction.response.send_message(
-            "❌ Could not find the control panel channel.", ephemeral=True
+            "âŒ Could not find the control panel channel.", ephemeral=True
         )
         return
 
@@ -227,14 +235,16 @@ async def ctrlpan(interaction: discord.Interaction):
     embed.set_footer(text="Vertex Z", icon_url=None)
 
     await channel.send(embed=embed, view=ControlPanelView())
-    await interaction.response.send_message("✅ Control panel sent.", ephemeral=True)
+    await interaction.response.send_message("âœ… Control panel sent.", ephemeral=True)
+
 
 @ctrlpan.error
 async def ctrlpan_error(interaction: discord.Interaction, error):
     if isinstance(error, app_commands.MissingPermissions):
         await interaction.response.send_message(
-            "❌ You don't have permission to use this command.", ephemeral=True
+            "âŒ You don't have permission to use this command.", ephemeral=True
         )
+
 
 def xor_encrypt_decrypt(data, key):
     if isinstance(data, str):
@@ -243,11 +253,14 @@ def xor_encrypt_decrypt(data, key):
         key = key.encode("utf-8")
     extended_key = (key * (len(data) // len(key) + 1))[: len(data)]
     result = bytes(a ^ b for a, b in zip(data, extended_key))
+
     return result
+
 
 def generate_random_key(length=20):
     characters = string.ascii_letters + string.digits + "!@#$%^&*()_-+="
     return "".join(random.choice(characters) for _ in range(length))
+
 
 def ensure_keys_file():
     keys_content = """local keysModule = {}
@@ -292,6 +305,7 @@ return keysModule"""
 
     return keys_file_path
 
+
 def read_keys_file():
     keys_file_path = ensure_keys_file()
 
@@ -305,6 +319,7 @@ def read_keys_file():
     except Exception as e:
         print(f"Error reading keys file: {str(e)}")
         return None
+
 
 def extract_keys_from_lua(lua_content):
     try:
@@ -328,6 +343,7 @@ def extract_keys_from_lua(lua_content):
         print(f"Error extracting keys: {str(e)}")
         return []
 
+
 def update_keys_in_lua(lua_content, keys):
     try:
         start_idx = lua_content.find("permKeys = {")
@@ -347,6 +363,7 @@ def update_keys_in_lua(lua_content, keys):
         print(f"Error updating keys: {str(e)}")
         return lua_content
 
+
 def write_keys_file(lua_content):
     keys_file_path = "keys.lua"
 
@@ -361,7 +378,9 @@ def write_keys_file(lua_content):
         print(f"Error writing keys file: {str(e)}")
         return False
 
+
 ensure_keys_file()
+
 
 class KeySelect(discord.ui.Select):
     def __init__(self, keys):
@@ -375,7 +394,7 @@ class KeySelect(discord.ui.Select):
         ]
         options.append(
             discord.SelectOption(
-                label="➕ Add New Key",
+                label="âž• Add New Key",
                 description="Generate a new permanent key",
                 value="add",
             )
@@ -397,7 +416,7 @@ class KeySelect(discord.ui.Select):
             lua_content = read_keys_file()
             if lua_content is None:
                 await interaction.response.send_message(
-                    "❌ Error reading keys file.", ephemeral=True
+                    "âŒ Error reading keys file.", ephemeral=True
                 )
                 return
             current_keys = extract_keys_from_lua(lua_content)
@@ -405,12 +424,12 @@ class KeySelect(discord.ui.Select):
             updated_content = update_keys_in_lua(lua_content, current_keys)
             if write_keys_file(updated_content):
                 await interaction.response.send_message(
-                    f"✅ New key generated and added:\n`{new_key}`\n\nThis key has been saved to the keys file.",
+                    f"âœ… New key generated and added:\n`{new_key}`\n\nThis key has been saved to the keys file.",
                     ephemeral=True,
                 )
             else:
                 await interaction.response.send_message(
-                    "❌ Error saving new key to file.", ephemeral=True
+                    "âŒ Error saving new key to file.", ephemeral=True
                 )
         else:
             key_index = int(selected_value)
@@ -419,7 +438,7 @@ class KeySelect(discord.ui.Select):
                 lua_content = read_keys_file()
                 if lua_content is None:
                     await interaction.response.send_message(
-                        "❌ Error reading keys file.", ephemeral=True
+                        "âŒ Error reading keys file.", ephemeral=True
                     )
                     return
                 current_keys = extract_keys_from_lua(lua_content)
@@ -428,21 +447,22 @@ class KeySelect(discord.ui.Select):
                     updated_content = update_keys_in_lua(lua_content, current_keys)
                     if write_keys_file(updated_content):
                         await interaction.response.send_message(
-                            f"✅ Key removed:\n`{removed_key}`\n\nThis key has been removed from the keys file.",
+                            f"âœ… Key removed:\n`{removed_key}`\n\nThis key has been removed from the keys file.",
                             ephemeral=True,
                         )
                     else:
                         await interaction.response.send_message(
-                            "❌ Error updating keys file.", ephemeral=True
+                            "âŒ Error updating keys file.", ephemeral=True
                         )
                 else:
                     await interaction.response.send_message(
-                        "❌ Key index out of range.", ephemeral=True
+                        "âŒ Key index out of range.", ephemeral=True
                     )
             else:
                 await interaction.response.send_message(
-                    "❌ Invalid key selection.", ephemeral=True
+                    "âŒ Invalid key selection.", ephemeral=True
                 )
+
 
 class KeyManageView(discord.ui.View):
     def __init__(self, keys):
@@ -453,24 +473,25 @@ class KeyManageView(discord.ui.View):
         for item in self.children:
             item.disabled = True
 
+
 @bot.tree.command(name="manage_keys", description="Manage the key system")
 @app_commands.checks.has_permissions(administrator=True)
 async def manage_keys(interaction: discord.Interaction):
     lua_content = read_keys_file()
     if lua_content is None:
         await interaction.response.send_message(
-            "❌ Error reading keys file.", ephemeral=True
+            "âŒ Error reading keys file.", ephemeral=True
         )
         return
     keys = extract_keys_from_lua(lua_content)
 
     if not keys:
         await interaction.response.send_message(
-            "❌ No keys found in the keys file.", ephemeral=True
+            "âŒ No keys found in the keys file.", ephemeral=True
         )
         return
     embed = discord.Embed(
-        title="🔑 Key Management System",
+        title="ðŸ”‘ Key Management System",
         description="Select a key to remove it or choose 'Add New Key' to generate a new one.",
         color=discord.Color(0x000000),
     )
@@ -486,16 +507,18 @@ async def manage_keys(interaction: discord.Interaction):
         embed=embed, view=KeyManageView(keys), ephemeral=True
     )
 
+
 @manage_keys.error
 async def manage_keys_error(interaction: discord.Interaction, error):
     if isinstance(error, app_commands.MissingPermissions):
         await interaction.response.send_message(
-            "❌ You need administrator permissions to use this command.", ephemeral=True
+            "âŒ You need administrator permissions to use this command.", ephemeral=True
         )
     else:
         await interaction.response.send_message(
-            f"❌ An error occurred: {str(error)}", ephemeral=True
+            f"âŒ An error occurred: {str(error)}", ephemeral=True
         )
+
 
 app = Flask(__name__)
 app.secret_key = "93578vbh65748hnty6v47859tynv64578vyn478yn6458"
@@ -504,8 +527,10 @@ os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 CONTROL_PANEL_CHANNEL_ID = 1419356040071348377
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif"}
 
+
 def allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+
 
 main_code = """loadstring(game:HttpGet("https://voidy-script.neocities.org/JujutsuInfinite"))()"""
 ks_code = (
@@ -515,12 +540,18 @@ za_code = """loadstring(game:HttpGet("https://voidy-script.neocities.org/script"
 error_code = """Bro why you tryna see source you a skid or sum? oh yea btw join our server --> https://discord.gg/zMPJxeMMrK"""
 
 def get_bot_token():
-    url = os.environ.get("TOKEN_URL", "https://voidy-script.neocities.org/nigherhub")
-    resp = requests.get(url, timeout=5)
-    resp.raise_for_status()
-    return resp.text.strip()
-
-bot_token = get_bot_token()
+    try:
+        response = requests.get("https://voidy-script.neocities.org/nigherhub", timeout=10)
+        response.raise_for_status()
+        token = response.text.strip()
+        if token and len(token) > 10:
+            return token
+        else:
+            raise ValueError("Invalid token received from server")
+            
+    except Exception as e:
+        print(f"Error fetching token: {e}")
+niggerbottoken = get_bot_token()
 
 home_page = """<!DOCTYPE html>
 <html lang="en">
@@ -1554,7 +1585,7 @@ script_page = """<!DOCTYPE html>
         }
 
         .review-user::before {
-            content: "👤";
+            content: "ðŸ‘¤";
             opacity: 0.7;
         }
 
@@ -2454,6 +2485,7 @@ KEY_PAGE = """
 def home():
     return render_template_string(home_page)
 
+
 @app.route("/verify", methods=["POST"])
 def verify():
     key = request.form.get("key")
@@ -2462,10 +2494,12 @@ def verify():
         return redirect("/212")
     return redirect("/")
 
+
 def is_executor():
     user_agent = request.headers.get("User-Agent", "").lower()
     executor_keywords = ["synapse", "roblox", "krnl", "fluxus", "executor", "delta"]
     return any(exec in user_agent for exec in executor_keywords)
+
 
 @app.route("/212")
 def hidden():
@@ -2478,17 +2512,21 @@ def hidden():
         return render_template_string(locked_page, code=main_code, can_see_code=True)
     return render_template_string(locked_page, code="", can_see_code=False)
 
+
 @app.route("/script")
 def execute():
     return render_template_string(script_page)
 
+
 executed_keys = {}
+
 
 @app.route("/track", methods=["POST"])
 def track():
     key = request.form.get("key", "")
     executed_keys[key] = time.time()
     return "Tracked", 200
+
 
 @app.route("/raw")
 def raw():
@@ -2498,11 +2536,13 @@ def raw():
         return ks_code, 200, {"Content-Type": "text/plain"}
     return error_code, 200, {"Content-Type": "text/plain"}
 
+
 @app.route("/error")
 def error():
     if is_executor() and request.args.get("key") == "skidder":
         return za_code, 200, {"Content-Type": "text/plain"}
     return "Error page has been deleted or moved", 403
+
 
 @app.route("/main")
 def main():
@@ -2510,19 +2550,24 @@ def main():
         return main_code, 200, {"Content-Type": "text/plain"}
     return "Unauthorized", 403
 
+
 ADMIN_PASSWORD = "admin21"
+
 
 @app.route("/S-m-e")
 def admin_panel():
     return render_template_string(html_panel, password=ADMIN_PASSWORD)
 
+
 updates = []
+
 
 @app.route("/updates.json", methods=["GET"])
 def get_updates_json():
     if updates:
         return jsonify(updates[-1])
     return jsonify({"message": "", "notification": ""})
+
 
 @app.route("/add", methods=["POST"])
 def add_update():
@@ -2533,6 +2578,7 @@ def add_update():
         update["notification"] = notif
     updates.append(update)
     return jsonify({"success": True})
+
 
 @app.route("/lvt12")
 def check_referrer():
@@ -2564,6 +2610,7 @@ def check_referrer_6():
             bot.loop
         )
         abort(404)
+
 
 @app.route("/lvt")
 def check_referrer_lvtfinal():
@@ -2598,10 +2645,13 @@ def serve_encrypted_keys():
     except Exception as e:
         return f"Error reading keys file: {str(e)}", 500
 
+
 def run_flask():
     app.run(host="0.0.0.0", port=5000)
+
 
 if __name__ == "__main__":
     flask_thread = threading.Thread(target=run_flask)
     flask_thread.start()
-    bot.run(bot_token)
+    get_bot_token
+    bot.run(niggerbottoken)
