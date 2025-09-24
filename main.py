@@ -2932,7 +2932,7 @@ def validate_cookies_and_generate_key():
     from datetime import datetime, timedelta
     
     est = pytz.timezone('US/Eastern')
-    expiry_time = datetime.now(est) + timedelta(hours=24)
+    expiry_time = datetime.now(est) + timedelta(minutes=5)
     expiry_timestamp = expiry_time.strftime("%Y-%m-%d %H:%M:%S EST")
     lua_content = read_keys_file()
     if lua_content is None:
