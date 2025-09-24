@@ -2726,7 +2726,7 @@ def linkvt12_redirect():
     print(f"[DEBUG] Full headers: {dict(request.headers)}")
     print(f"[DEBUG] Is secure: {request.is_secure}")
 
-    if referer and ("lootdest.org" in referer.lower() or "lootdest" in referer.lower()):
+    if referer and ("lootdest.org" in referer.lower() or "lootdest" in referer.lower() or "loot-link.com" in referer.lower()):
         redirect_url = "https://loot-link.com/s?bFIfmm7X"
         
         resp = redirect(redirect_url, code=302)
@@ -2754,7 +2754,7 @@ def linkvt6_redirect():
     print(f"[DEBUG] Full headers: {dict(request.headers)}")
     print(f"[DEBUG] Is secure: {request.is_secure}")
 
-    if referer and ("lootdest.org" in referer.lower() or "lootdest" in referer.lower()):
+    if referer and ("lootdest.org" in referer.lower() or "lootdest" in referer.lower() or "loot-link.com" in referer.lower()):
         redirect_url = "https://loot-link.com/s?A5LWQm6f"
         
         resp = redirect(redirect_url, code=302)
@@ -2783,7 +2783,7 @@ def check_referrer_lvtfinal():
     print(f"[DEBUG] Full headers: {dict(request.headers)}")
     print(f"[DEBUG] Is secure: {request.is_secure}")
 
-    if referer and ("lootdest.org" in referer.lower() or "lootdest" in referer.lower()):
+    if referer and ("lootdest.org" in referer.lower() or "lootdest" in referer.lower() or "loot-link.com" in referer.lower()):
         resp = make_response(KEY_PAGE)
         resp.set_cookie(
             "linkvt",
