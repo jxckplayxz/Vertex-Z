@@ -3,3 +3,4 @@ Werkzeug
 discord.py
 requests
 gunicorn
+pytz
