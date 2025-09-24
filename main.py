@@ -520,6 +520,107 @@ async def manage_keys_error(interaction: discord.Interaction, error):
         await interaction.response.send_message(
             f"❌ An error occurred: {str(error)}", ephemeral=True
         )
+        
+@bot.tree.command(name="tk-dump", description="Display all temporary keys and their expiration dates")
+@app_commands.checks.has_permissions(administrator=True)
+async def tk_dump(interaction: discord.Interaction):
+    """Display all temporary keys and their expiration dates in an embed"""
+    try:
+        lua_content = read_keys_file()
+        if lua_content is None:
+            await interaction.response.send_message(
+                "❌ Error reading keys file.", ephemeral=True
+            )
+            return
+        
+        # Extract temp keys section
+        start_idx = lua_content.find("tempKeys = {")
+        if start_idx == -1:
+            await interaction.response.send_message(
+                "❌ No temporary keys section found.", ephemeral=True
+            )
+            return
+        
+        start_bracket = lua_content.find("{", start_idx) + 1
+        end_bracket = lua_content.find("}", start_bracket)
+        temp_keys_section = lua_content[start_bracket:end_bracket]
+        
+        # Parse temp keys
+        temp_keys = []
+        lines = temp_keys_section.split('\n')
+        
+        for line in lines:
+            line = line.strip()
+            if line.startswith('["') and '"] = "' in line:
+                try:
+                    key_end = line.find('"] = "')
+                    key = line[2:key_end]
+                    expiry_str = line[key_end + 6:-2]
+                    temp_keys.append((key, expiry_str))
+                except Exception as e:
+                    print(f"Error parsing temp key line: {e}")
+                    continue
+        
+        if not temp_keys:
+            await interaction.response.send_message(
+                "❌ No temporary keys found.", ephemeral=True
+            )
+            return
+        
+        # Create embed
+        embed = discord.Embed(
+            title="🔑 Temporary Keys Dump",
+            description=f"Found **{len(temp_keys)}** temporary key(s)",
+            color=discord.Color.gold(),
+            timestamp=discord.utils.utcnow()
+        )
+        
+        # Add keys to embed (split into fields if too many)
+        key_list = ""
+        for i, (key, expiry) in enumerate(temp_keys, 1):
+            key_entry = f"**{i}. `{key}`**\n   📅 Expires: `{expiry}`\n"
+            
+            # If adding this entry would exceed field limit, create a new field
+            if len(key_list) + len(key_entry) > 1024:
+                embed.add_field(
+                    name=f"Temporary Keys (Part {len(embed.fields) + 1})",
+                    value=key_list,
+                    inline=False
+                )
+                key_list = key_entry
+            else:
+                key_list += key_entry
+        
+        # Add remaining keys
+        if key_list:
+            embed.add_field(
+                name=f"Temporary Keys (Part {len(embed.fields) + 1})",
+                value=key_list,
+                inline=False
+            )
+        
+        embed.set_footer(text=f"Total keys: {len(temp_keys)}")
+        
+        await interaction.response.send_message(embed=embed, ephemeral=True)
+        
+    except Exception as e:
+        print(f"Error in tk-dump command: {e}")
+        await interaction.response.send_message(
+            f"❌ An error occurred while retrieving temporary keys: {str(e)}", 
+            ephemeral=True
+        )
+
+
+@tk_dump.error
+async def tk_dump_error(interaction: discord.Interaction, error):
+    if isinstance(error, app_commands.MissingPermissions):
+        await interaction.response.send_message(
+            "❌ You need administrator permissions to use this command.", ephemeral=True
+        )
+    else:
+        await interaction.response.send_message(
+            f"❌ An error occurred: {str(error)}", ephemeral=True
+        )
 
 
 app = Flask(__name__)
