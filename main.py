@@ -14,6 +14,7 @@ import time
 import threading
 import discord
 import random
+import io
 from discord.ext import commands
 import base64
 from discord import app_commands
@@ -622,6 +623,51 @@ async def tk_dump_error(interaction: discord.Interaction, error):
             f"❌ An error occurred: {str(error)}", ephemeral=True
         )
 
+@bot.tree.command(name="download_keys", description="Download the encrypted keys file (Admin only)")
+@app_commands.checks.has_permissions(administrator=True)
+async def download_keys(interaction: discord.Interaction):
+    """Download the encrypted keys.lua file"""
+    try:
+        # Ensure the keys file exists and get its path
+        keys_file_path = ensure_keys_file()
+        
+        # Read the encrypted content
+        with open(keys_file_path, "rb") as f:
+            encrypted_content = f.read()
+        
+        # Create a Discord file object
+        file = discord.File(
+            io.BytesIO(encrypted_content),
+            filename="keys.lua",
+            description="Encrypted keys file"
+        )
+        
+        # Send the file to the user
+        await interaction.response.send_message(
+            "🔑 **Encrypted Keys File**\nHere is the current keys.lua file:",
+            file=file,
+            ephemeral=True
+        )
+        
+    except Exception as e:
+        print(f"Error in download_keys command: {e}")
+        await interaction.response.send_message(
+            f"❌ An error occurred while retrieving the keys file: {str(e)}", 
+            ephemeral=True
+        )
+
+@download_keys.error
+async def download_keys_error(interaction: discord.Interaction, error):
+    if isinstance(error, app_commands.MissingPermissions):
+        await interaction.response.send_message(
+            "❌ You need administrator permissions to use this command.", 
+            ephemeral=True
+        )
+    else:
+        await interaction.response.send_message(
+            f"❌ An error occurred: {str(error)}", 
+            ephemeral=True
+        )
 
 app = Flask(__name__)
 app.secret_key = "93578vbh65748hnty6v47859tynv64578vyn478yn6458"
@@ -2932,7 +2978,7 @@ def validate_cookies_and_generate_key():
     from datetime import datetime, timedelta
     
     est = pytz.timezone('US/Eastern')
-    expiry_time = datetime.now(est) + timedelta(minutes=5)
+    expiry_time = datetime.now(est) + timedelta(hours=24)
     expiry_timestamp = expiry_time.strftime("%Y-%m-%d %H:%M:%S EST")
     lua_content = read_keys_file()
     if lua_content is None:
