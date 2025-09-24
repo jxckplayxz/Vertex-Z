@@ -2720,20 +2720,22 @@ def add_update():
 
 @app.route("/lvt12")
 def linkvt12_redirect():
-    referer = request.headers.get("Referer", "")
+    referer = request.referrer or request.headers.get("Referer", "")
     ip_address = request.headers.get("X-Forwarded-For", request.remote_addr)
-    print(f"[REFERER LOG] /linkvt4 - Referer: {referer if referer else 'None'} - IP: {ip_address}")
+    print(f"[REFERER LOG] /lvt12 - Referer: {referer if referer else 'None'} - IP: {ip_address}")
+    print(f"[DEBUG] Full headers: {dict(request.headers)}")
+    print(f"[DEBUG] Is secure: {request.is_secure}")
 
-    if "lootdest.org" in referer:
+    if referer and ("lootdest.org" in referer.lower() or "lootdest" in referer.lower()):
         redirect_url = "https://loot-link.com/s?bFIfmm7X"
         
-        resp = redirect(redirect_url)
+        resp = redirect(redirect_url, code=302)
         resp.set_cookie(
             "linkvt12_ck",
             secrets.token_hex(16),
-            secure=True,
+            secure=request.is_secure,
             httponly=False,
-            samesite="Strict",
+            samesite="Lax",
             path="/"
         )
         return resp
@@ -2746,20 +2748,22 @@ def linkvt12_redirect():
 
 @app.route("/lvt6")
 def linkvt6_redirect():
-    referer = request.headers.get("Referer", "")
+    referer = request.referrer or request.headers.get("Referer", "")
     ip_address = request.headers.get("X-Forwarded-For", request.remote_addr)
-    print(f"[REFERER LOG] /linkvt6 - Referer: {referer if referer else 'None'} - IP: {ip_address}")
+    print(f"[REFERER LOG] /lvt6 - Referer: {referer if referer else 'None'} - IP: {ip_address}")
+    print(f"[DEBUG] Full headers: {dict(request.headers)}")
+    print(f"[DEBUG] Is secure: {request.is_secure}")
 
-    if "lootdest.org" in referer:
+    if referer and ("lootdest.org" in referer.lower() or "lootdest" in referer.lower()):
         redirect_url = "https://loot-link.com/s?A5LWQm6f"
         
-        resp = redirect(redirect_url)
+        resp = redirect(redirect_url, code=302)
         resp.set_cookie(
             "linkvt6_ck",
             secrets.token_hex(16),
-            secure=True,
+            secure=request.is_secure,
             httponly=False,
-            samesite="Strict",
+            samesite="Lax",
             path="/"
         )
         return resp
@@ -2770,27 +2774,29 @@ def linkvt6_redirect():
         )
         abort(404)
 
-
 @app.route("/lvt")
 def check_referrer_lvtfinal():
-    referrer = request.referrer
-    ip_address = request.remote_addr
+    referer = request.referrer or request.headers.get("Referer", "")
+    ip_address = request.headers.get("X-Forwarded-For", request.remote_addr)
     user_agent = request.user_agent.string
+    print(f"[REFERER LOG] /lvt - Referer: {referer if referer else 'None'} - IP: {ip_address}")
+    print(f"[DEBUG] Full headers: {dict(request.headers)}")
+    print(f"[DEBUG] Is secure: {request.is_secure}")
 
-    if referrer and "lootdest.org" in referrer:
+    if referer and ("lootdest.org" in referer.lower() or "lootdest" in referer.lower()):
         resp = make_response(KEY_PAGE)
         resp.set_cookie(
             "linkvt",
             "883uhdhjfdhdhsjkej3j400;'*(*(*$&#*@JHFGDS8JSHY1$",
-            secure=True,
+            secure=request.is_secure,
             httponly=False,
-            samesite="Strict",
+            samesite="Lax",
             path="/"
         )
         return resp
     else:
         asyncio.run_coroutine_threadsafe(
-            send_security_alert(ip_address, user_agent, referrer), 
+            send_security_alert(ip_address, user_agent, referer), 
             bot.loop
         )
         abort(404)
