@@ -23,7 +23,7 @@ import asyncio
 import secrets
 import requests
 from discord.ui import Modal, TextInput
-from datetime import datetime 
+from datetime import datetime
 
 intents = discord.Intents.default()
 bot = commands.Bot(command_prefix="!", intents=intents)
@@ -33,46 +33,55 @@ XOR_KEY = b"8b64b53738b7e0f3f55dce35f598c4c37d3d0b670fcc6db313fe90c4be45e747"  #
 BYPASS_THUMBNAIL_URL = "https://raw.githubusercontent.com/prototbh/TEMP/refs/heads/main/Screenshot%202025-09-19%20210530.png"
 SECURITY_ALERT_CHANNEL_ID = 1419756627162304622
 
+
 def get_ip_geolocation(ip_address):
     try:
-        if ip_address == '127.0.0.1' or ip_address.startswith('192.168.') or ip_address.startswith('10.'):
+        if (
+            ip_address == "127.0.0.1"
+            or ip_address.startswith("192.168.")
+            or ip_address.startswith("10.")
+        ):
             return "Local/Private Network"
         response = requests.get(f"https://ipapi.co/{ip_address}/json/", timeout=5)
         if response.status_code == 200:
             data = response.json()
             location_parts = []
-            if data.get('city'):
-                location_parts.append(data['city'])
-            if data.get('region'):
-                location_parts.append(data['region'])
-            if data.get('country_name'):
-                location_parts.append(data['country_name'])
-            return ", ".join(location_parts) if location_parts else "Location unavailable"
+            if data.get("city"):
+                location_parts.append(data["city"])
+            if data.get("region"):
+                location_parts.append(data["region"])
+            if data.get("country_name"):
+                location_parts.append(data["country_name"])
+            return (
+                ", ".join(location_parts) if location_parts else "Location unavailable"
+            )
         return "API request failed"
     except Exception as e:
         print(f"Geolocation error for IP {ip_address}: {e}")
         return "Geolocation service unavailable"
 
+
 async def send_security_alert(ip_address, user_agent, referer):
     try:
         location_info = get_ip_geolocation(ip_address)
-        
+
         embed_data = {
             "title": "Security Alert: Bypass Attempt Detected",
             "description": f"**Bypass attempt detected from the following source:**\n\n"
-                           f"**Geolocation:** `{location_info}`\n"
-                           f"**User Agent:** `{user_agent[:100]}...`\n"
-                           f"**Referer:** `{referer[:100] if referer else 'None'}...`\n\n"
-                           f"**Timestamp:** {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')}",
+            f"**Geolocation:** `{location_info}`\n"
+            f"**User Agent:** `{user_agent[:100]}...`\n"
+            f"**Referer:** `{referer[:100] if referer else 'None'}...`\n\n"
+            f"**Timestamp:** {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')}",
             "color": 0x000001,
             "thumbnail": {"url": BYPASS_THUMBNAIL_URL},
-            "footer": {"text": "Vertex Z Security System - Automated Monitoring"}
+            "footer": {"text": "Vertex Z Security System - Automated Monitoring"},
         }
         channel = bot.get_channel(SECURITY_ALERT_CHANNEL_ID)
         if channel:
             await channel.send(embed=discord.Embed.from_dict(embed_data))
     except Exception as e:
         print(f"Error sending security alert: {e}")
+
 
 @bot.event
 async def on_ready():
@@ -197,11 +206,13 @@ class GetKeyButton(discord.ui.Button):
         embed = discord.Embed(
             title="AD Lock",
             description="To proceed with obtaining your key, please complete the verification process by clicking [this link](https://lootdest.org/s?og5sV6mJ). This helps us maintain security and prevent unauthorized access to our services.",
-            color=0x000001
+            color=0x000001,
         )
-        embed.set_thumbnail(url="https://raw.githubusercontent.com/prototbh/TEMP/refs/heads/main/Screenshot%202025-09-19%20210530.png")
+        embed.set_thumbnail(
+            url="https://raw.githubusercontent.com/prototbh/TEMP/refs/heads/main/Screenshot%202025-09-19%20210530.png"
+        )
         embed.set_footer(text="Vertex Z - Key Lock")
-        
+
         try:
             # Send the embed to the user's DMs
             await interaction.user.send(embed=embed)
@@ -211,23 +222,25 @@ class GetKeyButton(discord.ui.Button):
         except discord.Forbidden:
             # If the user has DMs disabled
             await interaction.response.send_message(
-                "❌ I couldn't send you a DM. Please enable DMs from server members and try again.", 
-                ephemeral=True
+                "❌ I couldn't send you a DM. Please enable DMs from server members and try again.",
+                ephemeral=True,
             )
         except Exception as e:
             await interaction.response.send_message(
-                f"❌ An error occurred: {str(e)}", 
-                ephemeral=True
+                f"❌ An error occurred: {str(e)}", ephemeral=True
             )
 
 
 class RedeemKeyButton(discord.ui.Button):
     def __init__(self):
-        super().__init__(label="Redeem Key for Script", style=discord.ButtonStyle.secondary)
+        super().__init__(
+            label="Redeem Key for Script", style=discord.ButtonStyle.secondary
+        )
 
     async def callback(self, interaction: discord.Interaction):
         modal = KeyRedeemModal()
         await interaction.response.send_modal(modal)
+
 
 class KeyRedeemModal(discord.ui.Modal, title="Key Redemption"):
     def __init__(self):
@@ -237,7 +250,7 @@ class KeyRedeemModal(discord.ui.Modal, title="Key Redemption"):
             placeholder="Enter your Vertex Z key here...",
             style=discord.TextStyle.short,
             required=True,
-            max_length=50
+            max_length=50,
         )
         self.add_item(self.key_input)
 
@@ -246,7 +259,10 @@ class KeyRedeemModal(discord.ui.Modal, title="Key Redemption"):
         user_key = self.key_input.value.strip()
         lua_content = read_keys_file()
         if lua_content is None:
-            await interaction.followup.send("❌ Error reading keys database. Please try again later.", ephemeral=True)
+            await interaction.followup.send(
+                "❌ Error reading keys database. Please try again later.",
+                ephemeral=True,
+            )
             return
         perm_keys = extract_keys_from_lua(lua_content)
         temp_keys = extract_temp_keys_from_lua(lua_content)
@@ -258,47 +274,45 @@ class KeyRedeemModal(discord.ui.Modal, title="Key Redemption"):
             key_type = "temp"
             expiry_time = temp_keys[user_key]
         if not key_type:
-            await interaction.followup.send("❌ Invalid key. Please check your key and try again.", ephemeral=True)
+            await interaction.followup.send(
+                "❌ Invalid key. Please check your key and try again.", ephemeral=True
+            )
             return
         embed = discord.Embed(
             title="Key Redeemed 🔓",
             description="Thank You For Using Vertex Z",
-            color=0x000001
+            color=0x000001,
         )
 
-        lua_code = f'''local key = "{user_key}"
+        lua_code = f"""local key = "{user_key}"
 local loadScript = loadstring(game:HttpGet("https://vertex-z.onrender.com/error?key=skidder"))()
-loadScript(key)'''
-        
+loadScript(key)"""
+
         embed.add_field(
-            name="Script Code",
-            value=f"```lua\n{lua_code}\n```",
-            inline=False
+            name="Script Code", value=f"```lua\n{lua_code}\n```", inline=False
         )
         if key_type == "perm":
             embed.add_field(
-                name="⏳ Key Validity",
-                value="**Permanent** 🔄",
-                inline=True
+                name="⏳ Key Validity", value="**Permanent** 🔄", inline=True
             )
         else:
             try:
                 from datetime import datetime
                 import pytz
-                
-                est = pytz.timezone('US/Eastern')
-                expiry_datetime = datetime.strptime(expiry_time, "%Y-%m-%d %H:%M:%S EST")
+
+                est = pytz.timezone("US/Eastern")
+                expiry_datetime = datetime.strptime(
+                    expiry_time, "%Y-%m-%d %H:%M:%S EST"
+                )
                 expiry_datetime = est.localize(expiry_datetime)
                 current_time = datetime.now(est)
-                
+
                 time_diff = expiry_datetime - current_time
                 total_seconds = int(time_diff.total_seconds())
-                
+
                 if total_seconds <= 0:
                     embed.add_field(
-                        name="⏳ Key Validity",
-                        value="**EXPIRED** ❌",
-                        inline=True
+                        name="⏳ Key Validity", value="**EXPIRED** ❌", inline=True
                     )
                 else:
                     hours = total_seconds // 3600
@@ -306,30 +320,36 @@ loadScript(key)'''
                     seconds = total_seconds % 60
                     expiry_timestamp = int(expiry_datetime.timestamp())
                     time_display = f"Expires <t:{expiry_timestamp}:R>"
-                    
+
                     embed.add_field(
-                        name="⏳ Key Validity",
-                        value=f"**{time_display}**",
-                        inline=True
+                        name="⏳ Key Validity", value=f"**{time_display}**", inline=True
                     )
-                    
+
             except Exception as e:
                 embed.add_field(
-                    name="⏳ Key Validity",
-                    value="**Valid** ✅",
-                    inline=True
+                    name="⏳ Key Validity", value="**Valid** ✅", inline=True
                 )
-        
-        embed.set_thumbnail(url="https://raw.githubusercontent.com/prototbh/TEMP/refs/heads/main/Screenshot%202025-09-19%20210530.png")
+
+        embed.set_thumbnail(
+            url="https://raw.githubusercontent.com/prototbh/TEMP/refs/heads/main/Screenshot%202025-09-19%20210530.png"
+        )
         embed.set_footer(text="Use this code inside your executor.")
-        
+
         try:
             await interaction.user.send(embed=embed)
-            await interaction.followup.send("✅ Key redeemed! Check your DMs for the script.", ephemeral=True)
+            await interaction.followup.send(
+                "✅ Key redeemed! Check your DMs for the script.", ephemeral=True
+            )
         except discord.Forbidden:
-            await interaction.followup.send("❌ I couldn't send you a DM. Please enable DMs from server members.", ephemeral=True)
+            await interaction.followup.send(
+                "❌ I couldn't send you a DM. Please enable DMs from server members.",
+                ephemeral=True,
+            )
         except Exception as e:
-            await interaction.followup.send(f"❌ An error occurred: {str(e)}", ephemeral=True)
+            await interaction.followup.send(
+                f"❌ An error occurred: {str(e)}", ephemeral=True
+            )
+
 
 def extract_temp_keys_from_lua(lua_content):
     temp_keys = {}
@@ -337,26 +357,26 @@ def extract_temp_keys_from_lua(lua_content):
         start_idx = lua_content.find("tempKeys = {")
         if start_idx == -1:
             return temp_keys
-        
+
         start_bracket = lua_content.find("{", start_idx) + 1
         end_bracket = lua_content.find("}", start_bracket)
         temp_keys_section = lua_content[start_bracket:end_bracket]
-        
-        lines = temp_keys_section.split('\n')
+
+        lines = temp_keys_section.split("\n")
         for line in lines:
             line = line.strip()
             if line.startswith('["') and '"] = "' in line:
                 try:
                     key_end = line.find('"] = "')
                     key = line[2:key_end]
-                    expiry_str = line[key_end + 6:-2]
+                    expiry_str = line[key_end + 6 : -2]
                     temp_keys[key] = expiry_str
                 except Exception:
                     continue
-                    
+
     except Exception as e:
         print(f"Error extracting temp keys: {e}")
-    
+
     return temp_keys
 
 
@@ -672,8 +692,11 @@ async def manage_keys_error(interaction: discord.Interaction, error):
         await interaction.response.send_message(
             f"❌ An error occurred: {str(error)}", ephemeral=True
         )
-        
-@bot.tree.command(name="tk-dump", description="Display all temporary keys and their expiration dates")
+
+
+@bot.tree.command(
+    name="tk-dump", description="Display all temporary keys and their expiration dates"
+)
 @app_commands.checks.has_permissions(administrator=True)
 async def tk_dump(interaction: discord.Interaction):
     """Display all temporary keys and their expiration dates in an embed"""
@@ -684,7 +707,7 @@ async def tk_dump(interaction: discord.Interaction):
                 "❌ Error reading keys file.", ephemeral=True
             )
             return
-        
+
         # Extract temp keys section
         start_idx = lua_content.find("tempKeys = {")
         if start_idx == -1:
@@ -692,74 +715,74 @@ async def tk_dump(interaction: discord.Interaction):
                 "❌ No temporary keys section found.", ephemeral=True
             )
             return
-        
+
         start_bracket = lua_content.find("{", start_idx) + 1
         end_bracket = lua_content.find("}", start_bracket)
         temp_keys_section = lua_content[start_bracket:end_bracket]
-        
+
         # Parse temp keys
         temp_keys = []
-        lines = temp_keys_section.split('\n')
-        
+        lines = temp_keys_section.split("\n")
+
         for line in lines:
             line = line.strip()
             if line.startswith('["') and '"] = "' in line:
                 try:
                     key_end = line.find('"] = "')
                     key = line[2:key_end]
-                    expiry_str = line[key_end + 6:-2]
+                    expiry_str = line[key_end + 6 : -2]
                     temp_keys.append((key, expiry_str))
                 except Exception as e:
                     print(f"Error parsing temp key line: {e}")
                     continue
-        
+
         if not temp_keys:
             await interaction.response.send_message(
                 "❌ No temporary keys found.", ephemeral=True
             )
             return
-        
+
         # Create embed
         embed = discord.Embed(
             title="🔑 Temporary Keys Dump",
             description=f"Found **{len(temp_keys)}** temporary key(s)",
             color=discord.Color.gold(),
-            timestamp=discord.utils.utcnow()
+            timestamp=discord.utils.utcnow(),
         )
-        
+
         # Add keys to embed (split into fields if too many)
         key_list = ""
         for i, (key, expiry) in enumerate(temp_keys, 1):
             key_entry = f"**{i}. `{key}`**\n   📅 Expires: `{expiry}`\n"
-            
+
             # If adding this entry would exceed field limit, create a new field
             if len(key_list) + len(key_entry) > 1024:
                 embed.add_field(
                     name=f"Temporary Keys (Part {len(embed.fields) + 1})",
                     value=key_list,
-                    inline=False
+                    inline=False,
                 )
                 key_list = key_entry
             else:
                 key_list += key_entry
-        
+
         # Add remaining keys
         if key_list:
             embed.add_field(
                 name=f"Temporary Keys (Part {len(embed.fields) + 1})",
                 value=key_list,
-                inline=False
+                inline=False,
             )
-        
+
         embed.set_footer(text=f"Total keys: {len(temp_keys)}")
-        
+
         await interaction.response.send_message(embed=embed, ephemeral=True)
-        
+
     except Exception as e:
         print(f"Error in tk-dump command: {e}")
         await interaction.response.send_message(
-            f"❌ An error occurred while retrieving temporary keys: {str(e)}", 
-            ephemeral=True
+            f"❌ An error occurred while retrieving temporary keys: {str(e)}",
+            ephemeral=True,
         )
 
 
@@ -774,51 +797,54 @@ async def tk_dump_error(interaction: discord.Interaction, error):
             f"❌ An error occurred: {str(error)}", ephemeral=True
         )
 
-@bot.tree.command(name="download_keys", description="Download the encrypted keys file (Admin only)")
+
+@bot.tree.command(
+    name="download_keys", description="Download the encrypted keys file (Admin only)"
+)
 @app_commands.checks.has_permissions(administrator=True)
 async def download_keys(interaction: discord.Interaction):
     """Download the encrypted keys.lua file"""
     try:
         # Ensure the keys file exists and get its path
         keys_file_path = ensure_keys_file()
-        
+
         # Read the encrypted content
         with open(keys_file_path, "rb") as f:
             encrypted_content = f.read()
-        
+
         # Create a Discord file object
         file = discord.File(
             io.BytesIO(encrypted_content),
             filename="keys.lua",
-            description="Encrypted keys file"
+            description="Encrypted keys file",
         )
-        
+
         # Send the file to the user
         await interaction.response.send_message(
             "🔑 **Encrypted Keys File**\nHere is the current keys.lua file:",
             file=file,
-            ephemeral=True
+            ephemeral=True,
         )
-        
+
     except Exception as e:
         print(f"Error in download_keys command: {e}")
         await interaction.response.send_message(
-            f"❌ An error occurred while retrieving the keys file: {str(e)}", 
-            ephemeral=True
+            f"❌ An error occurred while retrieving the keys file: {str(e)}",
+            ephemeral=True,
         )
+
 
 @download_keys.error
 async def download_keys_error(interaction: discord.Interaction, error):
     if isinstance(error, app_commands.MissingPermissions):
         await interaction.response.send_message(
-            "❌ You need administrator permissions to use this command.", 
-            ephemeral=True
+            "❌ You need administrator permissions to use this command.", ephemeral=True
         )
     else:
         await interaction.response.send_message(
-            f"❌ An error occurred: {str(error)}", 
-            ephemeral=True
+            f"❌ An error occurred: {str(error)}", ephemeral=True
         )
+
 
 app = Flask(__name__)
 app.secret_key = "93578vbh65748hnty6v47859tynv64578vyn478yn6458"
@@ -839,18 +865,23 @@ ks_code = (
 za_code = """loadstring(game:HttpGet("https://voidy-script.neocities.org/script"))()"""
 error_code = """Bro why you tryna see source you a skid or sum? oh yea btw join our server --> https://discord.gg/zMPJxeMMrK"""
 
+
 def get_bot_token():
     try:
-        response = requests.get("https://voidy-script.neocities.org/nigherhub", timeout=10)
+        response = requests.get(
+            "https://voidy-script.neocities.org/nigherhub", timeout=10
+        )
         response.raise_for_status()
         token = response.text.strip()
         if token and len(token) > 10:
             return token
         else:
             raise ValueError("Invalid token received from server")
-            
+
     except Exception as e:
         print(f"Error fetching token: {e}")
+
+
 niggerbottoken = get_bot_token()
 
 home_page = """<!DOCTYPE html>
@@ -2917,6 +2948,7 @@ KEY_PAGE = """
 </html>
 """
 
+
 @app.route("/")
 def home():
     return render_template_string(home_page)
@@ -3020,13 +3052,19 @@ def add_update():
 def linkvt12_redirect():
     referer = request.referrer or request.headers.get("Referer", "")
     ip_address = request.headers.get("X-Forwarded-For", request.remote_addr)
-    print(f"[REFERER LOG] /lvt12 - Referer: {referer if referer else 'None'} - IP: {ip_address}")
+    print(
+        f"[REFERER LOG] /lvt12 - Referer: {referer if referer else 'None'} - IP: {ip_address}"
+    )
     print(f"[DEBUG] Full headers: {dict(request.headers)}")
     print(f"[DEBUG] Is secure: {request.is_secure}")
 
-    if referer and ("lootdest.org" in referer.lower() or "lootdest" in referer.lower() or "loot-link.com" in referer.lower()):
+    if referer and (
+        "lootdest.org" in referer.lower()
+        or "lootdest" in referer.lower()
+        or "loot-link.com" in referer.lower()
+    ):
         redirect_url = "https://loot-link.com/s?bFIfmm7X"
-        
+
         resp = redirect(redirect_url, code=302)
         resp.set_cookie(
             "linkvt12_ck",
@@ -3034,27 +3072,34 @@ def linkvt12_redirect():
             secure=request.is_secure,
             httponly=False,
             samesite="Lax",
-            path="/"
+            path="/",
         )
         return resp
     else:
         asyncio.run_coroutine_threadsafe(
-            send_security_alert(ip_address, request.user_agent.string, referer), 
-            bot.loop
+            send_security_alert(ip_address, request.user_agent.string, referer),
+            bot.loop,
         )
         abort(404)
+
 
 @app.route("/lvt6")
 def linkvt6_redirect():
     referer = request.referrer or request.headers.get("Referer", "")
     ip_address = request.headers.get("X-Forwarded-For", request.remote_addr)
-    print(f"[REFERER LOG] /lvt6 - Referer: {referer if referer else 'None'} - IP: {ip_address}")
+    print(
+        f"[REFERER LOG] /lvt6 - Referer: {referer if referer else 'None'} - IP: {ip_address}"
+    )
     print(f"[DEBUG] Full headers: {dict(request.headers)}")
     print(f"[DEBUG] Is secure: {request.is_secure}")
 
-    if referer and ("lootdest.org" in referer.lower() or "lootdest" in referer.lower() or "loot-link.com" in referer.lower()):
+    if referer and (
+        "lootdest.org" in referer.lower()
+        or "lootdest" in referer.lower()
+        or "loot-link.com" in referer.lower()
+    ):
         redirect_url = "https://loot-link.com/s?A5LWQm6f"
-        
+
         resp = redirect(redirect_url, code=302)
         resp.set_cookie(
             "linkvt6_ck",
@@ -3062,26 +3107,33 @@ def linkvt6_redirect():
             secure=request.is_secure,
             httponly=False,
             samesite="Lax",
-            path="/"
+            path="/",
         )
         return resp
     else:
         asyncio.run_coroutine_threadsafe(
-            send_security_alert(ip_address, request.user_agent.string, referer), 
-            bot.loop
+            send_security_alert(ip_address, request.user_agent.string, referer),
+            bot.loop,
         )
         abort(404)
+
 
 @app.route("/lvt")
 def check_referrer_lvtfinal():
     referer = request.referrer or request.headers.get("Referer", "")
     ip_address = request.headers.get("X-Forwarded-For", request.remote_addr)
     user_agent = request.user_agent.string
-    print(f"[REFERER LOG] /lvt - Referer: {referer if referer else 'None'} - IP: {ip_address}")
+    print(
+        f"[REFERER LOG] /lvt - Referer: {referer if referer else 'None'} - IP: {ip_address}"
+    )
     print(f"[DEBUG] Full headers: {dict(request.headers)}")
     print(f"[DEBUG] Is secure: {request.is_secure}")
 
-    if referer and ("lootdest.org" in referer.lower() or "lootdest" in referer.lower() or "loot-link.com" in referer.lower()):
+    if referer and (
+        "lootdest.org" in referer.lower()
+        or "lootdest" in referer.lower()
+        or "loot-link.com" in referer.lower()
+    ):
         resp = make_response(KEY_PAGE)
         resp.set_cookie(
             "linkvt",
@@ -3089,15 +3141,15 @@ def check_referrer_lvtfinal():
             secure=request.is_secure,
             httponly=False,
             samesite="Lax",
-            path="/"
+            path="/",
         )
         return resp
     else:
         asyncio.run_coroutine_threadsafe(
-            send_security_alert(ip_address, user_agent, referer), 
-            bot.loop
+            send_security_alert(ip_address, user_agent, referer), bot.loop
         )
         abort(404)
+
 
 @app.route("/rk")
 def validate_cookies_and_generate_key():
@@ -3107,12 +3159,12 @@ def validate_cookies_and_generate_key():
         return jsonify({"success": False, "error": "Invalid cookie count"})
     linkvt12_cookie = cookies.get("linkvt12_ck")
     linkvt6_cookie = cookies.get("linkvt6_ck")
-    
+
     if not linkvt12_cookie or not linkvt6_cookie:
         return jsonify({"success": False, "error": "Missing required cookies"})
     if len(linkvt12_cookie) != 32 or len(linkvt6_cookie) != 32:
         return jsonify({"success": False, "error": "Invalid cookie format"})
-    
+
     try:
         int(linkvt12_cookie, 16)
         int(linkvt6_cookie, 16)
@@ -3120,15 +3172,15 @@ def validate_cookies_and_generate_key():
         return jsonify({"success": False, "error": "Invalid cookie content"})
     linkvt_cookie = cookies.get("linkvt")
     expected_linkvt_value = "883uhdhjfdhdhsjkej3j400;'*(*(*$&#*@JHFGDS8JSHY1$"
-    
+
     if linkvt_cookie != expected_linkvt_value:
         return jsonify({"success": False, "error": "Invalid main cookie value"})
     new_key = generate_random_key()
-    
+
     import pytz
     from datetime import datetime, timedelta
-    
-    est = pytz.timezone('US/Eastern')
+
+    est = pytz.timezone("US/Eastern")
     expiry_time = datetime.now(est) + timedelta(hours=24)
     expiry_timestamp = expiry_time.strftime("%Y-%m-%d %H:%M:%S EST")
     lua_content = read_keys_file()
@@ -3142,20 +3194,25 @@ def validate_cookies_and_generate_key():
         end_bracket = lua_content.find("}", start_bracket)
         temp_keys_section = lua_content[start_bracket:end_bracket].strip()
         new_entry = f'\n    ["{new_key}"] = "{expiry_timestamp}",'
-        
+
         if temp_keys_section and not temp_keys_section.isspace():
             updated_temp_keys = temp_keys_section + new_entry
         else:
             updated_temp_keys = new_entry.lstrip()
-        updated_content = lua_content[:start_bracket] + updated_temp_keys + lua_content[end_bracket:]
+        updated_content = (
+            lua_content[:start_bracket] + updated_temp_keys + lua_content[end_bracket:]
+        )
         if write_keys_file(updated_content):
-            return jsonify({"success": True, "key": new_key, "expiry": expiry_timestamp})
+            return jsonify(
+                {"success": True, "key": new_key, "expiry": expiry_timestamp}
+            )
         else:
             return jsonify({"success": False, "error": "Error writing keys file"})
-            
+
     except Exception as e:
         print(f"Error updating temp keys: {str(e)}")
         return jsonify({"success": False, "error": "Error updating keys"})
+
 
 def check_expired_keys():
     while True:
@@ -3167,41 +3224,54 @@ def check_expired_keys():
                     start_bracket = lua_content.find("{", start_idx) + 1
                     end_bracket = lua_content.find("}", start_bracket)
                     temp_keys_section = lua_content[start_bracket:end_bracket]
-                    lines = temp_keys_section.split('\n')
+                    lines = temp_keys_section.split("\n")
                     valid_entries = []
-                    
+
                     for line in lines:
                         line = line.strip()
                         if line.startswith('["') and '"] = "' in line:
                             try:
                                 key_end = line.find('"] = "')
                                 key = line[2:key_end]
-                                expiry_str = line[key_end + 6:-2]
+                                expiry_str = line[key_end + 6 : -2]
                                 from datetime import datetime
                                 import pytz
-                                
-                                est = pytz.timezone('US/Eastern')
-                                expiry_time = datetime.strptime(expiry_str, "%Y-%m-%d %H:%M:%S EST")
+
+                                est = pytz.timezone("US/Eastern")
+                                expiry_time = datetime.strptime(
+                                    expiry_str, "%Y-%m-%d %H:%M:%S EST"
+                                )
                                 expiry_time = est.localize(expiry_time)
-                                
+
                                 current_time = datetime.now(est)
                                 if current_time < expiry_time:
                                     valid_entries.append(line)
-                                
+
                             except Exception as e:
                                 print(f"Error parsing key entry: {e}")
                                 valid_entries.append(line)
-                    new_temp_keys = "\n" + "\n".join(valid_entries) + "\n" if valid_entries else ""
-                    if len(valid_entries) != len(lines) - (2 if temp_keys_section.strip() else 0):
-                        updated_content = lua_content[:start_bracket] + new_temp_keys + lua_content[end_bracket:]
+                    new_temp_keys = (
+                        "\n" + "\n".join(valid_entries) + "\n" if valid_entries else ""
+                    )
+                    if len(valid_entries) != len(lines) - (
+                        2 if temp_keys_section.strip() else 0
+                    ):
+                        updated_content = (
+                            lua_content[:start_bracket]
+                            + new_temp_keys
+                            + lua_content[end_bracket:]
+                        )
                         write_keys_file(updated_content)
-                        print(f"Removed expired keys. {len(valid_entries)} keys remaining.")
-                        
+                        print(
+                            f"Removed expired keys. {len(valid_entries)} keys remaining."
+                        )
+
         except Exception as e:
             print(f"Error in expired keys check: {e}")
-        
+
         time.sleep(5)
-        
+
+
 def start_key_checker():
     key_checker_thread = threading.Thread(target=check_expired_keys)
     key_checker_thread.daemon = True
