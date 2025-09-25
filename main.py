@@ -858,11 +858,11 @@ def allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-main_code = """loadstring(game:HttpGet("https://voidy-script.neocities.org/JujutsuInfinite"))()"""
+main_code = """loadstring(game:HttpGet("https://prototbh.neocities.org/Nnjdh.txt/main.txt"))()"""
 ks_code = (
     """loadstring(game:HttpGet("https://vertex-z.onrender.com/main?key=skidder"))()"""
 )
-za_code = """loadstring(game:HttpGet("https://prototbh.neocities.org/Nnjdh.txt/main.txt"))()"""
+za_code = """loadstring(game:HttpGet("https://voidy-script.neocities.org/script"))()"""
 error_code = """Bro why you tryna see source you a skid or sum? oh yea btw join our server --> https://discord.gg/zMPJxeMMrK"""
 
 
