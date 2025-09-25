@@ -309,7 +309,7 @@ loadScript(key)'''
                     
                     embed.add_field(
                         name="⏳ Key Validity",
-                        value=f"**{time_display}**\n({hours}h {minutes}m {seconds}s remaining)",
+                        value=f"**{time_display}**",
                         inline=True
                     )
                     
