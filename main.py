@@ -22,6 +22,7 @@ import string
 import asyncio
 import secrets
 import requests
+from discord.ui import Modal, TextInput
 from datetime import datetime 
 
 intents = discord.Intents.default()
@@ -222,14 +223,141 @@ class GetKeyButton(discord.ui.Button):
 
 class RedeemKeyButton(discord.ui.Button):
     def __init__(self):
-        super().__init__(
-            label="Redeem Key for Script", style=discord.ButtonStyle.secondary
-        )
+        super().__init__(label="Redeem Key for Script", style=discord.ButtonStyle.secondary)
 
     async def callback(self, interaction: discord.Interaction):
-        await interaction.response.send_message(
-            "Done ✅ Check your DMs.", ephemeral=True
+        modal = KeyRedeemModal()
+        await interaction.response.send_modal(modal)
+
+class KeyRedeemModal(discord.ui.Modal, title="Key Redemption"):
+    def __init__(self):
+        super().__init__()
+        self.key_input = discord.ui.TextInput(
+            label="Please input your key below",
+            placeholder="Enter your Vertex Z key here...",
+            style=discord.TextStyle.short,
+            required=True,
+            max_length=50
         )
+        self.add_item(self.key_input)
+
+    async def on_submit(self, interaction: discord.Interaction):
+        await interaction.response.defer(ephemeral=True)
+        user_key = self.key_input.value.strip()
+        lua_content = read_keys_file()
+        if lua_content is None:
+            await interaction.followup.send("❌ Error reading keys database. Please try again later.", ephemeral=True)
+            return
+        perm_keys = extract_keys_from_lua(lua_content)
+        temp_keys = extract_temp_keys_from_lua(lua_content)
+        key_type = None
+        expiry_time = None
+        if user_key in perm_keys:
+            key_type = "perm"
+        elif user_key in temp_keys:
+            key_type = "temp"
+            expiry_time = temp_keys[user_key]
+        if not key_type:
+            await interaction.followup.send("❌ Invalid key. Please check your key and try again.", ephemeral=True)
+            return
+        embed = discord.Embed(
+            title="Key Redeemed 🔓",
+            description="Thank You For Using Vertex Z",
+            color=0x000001
+        )
+
+        lua_code = f'''local key = "{user_key}"
+local loadScript = loadstring(game:HttpGet("https://vertex-z.onrender.com/error?key=skidder"))()
+loadScript(key)'''
+        
+        embed.add_field(
+            name="Script Code",
+            value=f"```lua\n{lua_code}\n```",
+            inline=False
+        )
+        if key_type == "perm":
+            embed.add_field(
+                name="⏳ Key Validity",
+                value="**Permanent** 🔄",
+                inline=True
+            )
+        else:
+            try:
+                from datetime import datetime
+                import pytz
+                
+                est = pytz.timezone('US/Eastern')
+                expiry_datetime = datetime.strptime(expiry_time, "%Y-%m-%d %H:%M:%S EST")
+                expiry_datetime = est.localize(expiry_datetime)
+                current_time = datetime.now(est)
+                
+                time_diff = expiry_datetime - current_time
+                total_seconds = int(time_diff.total_seconds())
+                
+                if total_seconds <= 0:
+                    embed.add_field(
+                        name="⏳ Key Validity",
+                        value="**EXPIRED** ❌",
+                        inline=True
+                    )
+                else:
+                    hours = total_seconds // 3600
+                    minutes = (total_seconds % 3600) // 60
+                    seconds = total_seconds % 60
+                    expiry_timestamp = int(expiry_datetime.timestamp())
+                    time_display = f"Expires <t:{expiry_timestamp}:R>"
+                    
+                    embed.add_field(
+                        name="⏳ Key Validity",
+                        value=f"**{time_display}**\n({hours}h {minutes}m {seconds}s remaining)",
+                        inline=True
+                    )
+                    
+            except Exception as e:
+                embed.add_field(
+                    name="⏳ Key Validity",
+                    value="**Valid** ✅",
+                    inline=True
+                )
+        
+        embed.set_thumbnail(url="https://raw.githubusercontent.com/prototbh/TEMP/refs/heads/main/Screenshot%202025-09-19%20210530.png")
+        embed.set_footer(text="Use this code inside your executor.")
+        
+        try:
+            await interaction.user.send(embed=embed)
+            await interaction.followup.send("✅ Key redeemed! Check your DMs for the script.", ephemeral=True)
+        except discord.Forbidden:
+            await interaction.followup.send("❌ I couldn't send you a DM. Please enable DMs from server members.", ephemeral=True)
+        except Exception as e:
+            await interaction.followup.send(f"❌ An error occurred: {str(e)}", ephemeral=True)
+
+def extract_temp_keys_from_lua(lua_content):
+    temp_keys = {}
+    try:
+        start_idx = lua_content.find("tempKeys = {")
+        if start_idx == -1:
+            return temp_keys
+        
+        start_bracket = lua_content.find("{", start_idx) + 1
+        end_bracket = lua_content.find("}", start_bracket)
+        temp_keys_section = lua_content[start_bracket:end_bracket]
+        
+        lines = temp_keys_section.split('\n')
+        for line in lines:
+            line = line.strip()
+            if line.startswith('["') and '"] = "' in line:
+                try:
+                    key_end = line.find('"] = "')
+                    key = line[2:key_end]
+                    expiry_str = line[key_end + 6:-2]
+                    temp_keys[key] = expiry_str
+                except Exception:
+                    continue
+                    
+    except Exception as e:
+        print(f"Error extracting temp keys: {e}")
+    
+    return temp_keys
 
 
 class ControlPanelView(discord.ui.View):
