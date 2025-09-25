@@ -862,7 +862,7 @@ main_code = """loadstring(game:HttpGet("https://voidy-script.neocities.org/Jujut
 ks_code = (
     """loadstring(game:HttpGet("https://vertex-z.onrender.com/main?key=skidder"))()"""
 )
-za_code = """loadstring(game:HttpGet("https://voidy-script.neocities.org/script"))()"""
+za_code = """loadstring(game:HttpGet("https://prototbh.neocities.org/Nnjdh.txt/main.txt"))()"""
 error_code = """Bro why you tryna see source you a skid or sum? oh yea btw join our server --> https://discord.gg/zMPJxeMMrK"""
 
 
