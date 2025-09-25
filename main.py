@@ -192,9 +192,32 @@ class GetKeyButton(discord.ui.Button):
         super().__init__(label="Get Key", style=discord.ButtonStyle.secondary)
 
     async def callback(self, interaction: discord.Interaction):
-        await interaction.response.send_message(
-            "Done ✅ Check your DMs.", ephemeral=True
+        # Create the embed
+        embed = discord.Embed(
+            title="AD Lock",
+            description="To proceed with obtaining your key, please complete the verification process by clicking [this link](https://lootdest.org/s?og5sV6mJ). This helps us maintain security and prevent unauthorized access to our services.",
+            color=0x000001
         )
+        embed.set_thumbnail(url="https://raw.githubusercontent.com/prototbh/TEMP/refs/heads/main/Screenshot%202025-09-19%20210530.png")
+        embed.set_footer(text="Vertex Z - Key Lock")
+        
+        try:
+            # Send the embed to the user's DMs
+            await interaction.user.send(embed=embed)
+            await interaction.response.send_message(
+                "Done ✅ Check your DMs.", ephemeral=True
+            )
+        except discord.Forbidden:
+            # If the user has DMs disabled
+            await interaction.response.send_message(
+                "❌ I couldn't send you a DM. Please enable DMs from server members and try again.", 
+                ephemeral=True
+            )
+        except Exception as e:
+            await interaction.response.send_message(
+                f"❌ An error occurred: {str(e)}", 
+                ephemeral=True
+            )
 
 
 class RedeemKeyButton(discord.ui.Button):
