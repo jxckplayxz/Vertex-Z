@@ -2987,9 +2987,13 @@ def track():
 @app.route("/error")
 def error():
     if request.args.get("key") == "skidder":
-        return main_code, 200, {"Content-Type": "text/plain"}
+        # Ensure clean response for loadstring compatibility
+        response = make_response(str(main_code).strip())
+        response.headers['Content-Type'] = 'text/plain; charset=utf-8'
+        response.headers['Cache-Control'] = 'no-cache'
+        response.headers['Access-Control-Allow-Origin'] = '*'  # For CORS if needed
+        return response
     return "Error page has been deleted or moved", 403
-
 
 @app.route("/main")
 def main():
