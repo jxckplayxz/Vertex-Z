@@ -211,7 +211,7 @@ class GetKeyButton(discord.ui.Button):
         embed.set_thumbnail(
             url="https://raw.githubusercontent.com/prototbh/TEMP/refs/heads/main/Screenshot%202025-09-19%20210530.png"
         )
-        embed.set_footer(text="Vertex Z - Key Lock")
+        embed.set_footer(text="Vertex Z - Key Locked")
 
         try:
             # Send the embed to the user's DMs
@@ -289,7 +289,7 @@ local loadScript = loadstring(game:HttpGet("https://vertex-z.onrender.com/error?
 loadScript(key)"""
 
         embed.add_field(
-            name="Script Code", value=f"```lua\n{lua_code}\n```", inline=False
+            name="Script Code", value=f"``\n{lua_code}\n``", inline=False
         )
         if key_type == "perm":
             embed.add_field(
