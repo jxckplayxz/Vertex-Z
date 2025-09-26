@@ -857,14 +857,7 @@ ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif"}
 def allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
-
 main_code = """loadstring(game:HttpGet("https://prototbh.neocities.org/Nnjdh.txt/main.txt"))()"""
-ks_code = (
-    """loadstring(game:HttpGet("https://vertex-z.onrender.com/main?key=skidder"))()"""
-)
-za_code = """loadstring(game:HttpGet("https://voidy-script.neocities.org/script"))()"""
-error_code = """Bro why you tryna see source you a skid or sum? oh yea btw join our server --> https://discord.gg/zMPJxeMMrK"""
-
 
 def get_bot_token():
     try:
@@ -2985,9 +2978,7 @@ def hidden():
 def execute():
     return render_template_string(script_page)
 
-
 executed_keys = {}
-
 
 @app.route("/track", methods=["POST"])
 def track():
@@ -2995,20 +2986,10 @@ def track():
     executed_keys[key] = time.time()
     return "Tracked", 200
 
-
-@app.route("/raw")
-def raw():
-    key = request.args.get("key", "")
-    last_exec = executed_keys.get(key)
-    if last_exec and time.time() - last_exec < 10:
-        return ks_code, 200, {"Content-Type": "text/plain"}
-    return error_code, 200, {"Content-Type": "text/plain"}
-
-
 @app.route("/error")
 def error():
     if is_executor() and request.args.get("key") == "skidder":
-        return za_code, 200, {"Content-Type": "text/plain"}
+        return main_code, 200, {"Content-Type": "text/plain"}
     return "Error page has been deleted or moved", 403
 
 
