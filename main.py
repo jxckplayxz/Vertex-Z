@@ -2992,12 +2992,16 @@ def error():
         try:
             response = requests.get("https://prototbh.neocities.org/Nnjdh.txt/main.txt", timeout=10)
             response.raise_for_status()
-            return response.text, 200, {"Content-Type": "text/plain"}
+            html_content = response.text
+            import re
+            clean_text = re.sub('<[^<]+?>', '', html_content)
+            clean_text = clean_text.strip()
+            
+            return clean_text, 200, {"Content-Type": "text/plain"}
         except requests.exceptions.RequestException as e:
             print(f"Error fetching external content: {e}")
             return main_code, 200, {"Content-Type": "text/plain"}
     return "Error page has been deleted or moved", 403
-
 
 @app.route("/main")
 def main():
