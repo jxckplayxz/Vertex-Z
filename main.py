@@ -2988,14 +2988,14 @@ def track():
 
 @app.route("/error")
 def error():
-    if is_executor() and request.args.get("key") == "skidder":
+    if request.args.get("key") == "skidder":
         return main_code, 200, {"Content-Type": "text/plain"}
     return "Error page has been deleted or moved", 403
 
 
 @app.route("/main")
 def main():
-    if is_executor() and request.args.get("key") == "skidder":
+    if request.args.get("key") == "skidder":
         return main_code, 200, {"Content-Type": "text/plain"}
     return "Unauthorized", 403
 
