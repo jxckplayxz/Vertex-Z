@@ -225,12 +225,12 @@ class CloseTicketView(discord.ui.View):
 
 class GetKeyButton(discord.ui.Button):
     def __init__(self):
-        super().__init__(label="Get Key", style=discord.ButtonStyle.secondary)
+        super().__init__(label="🔑Get Key", style=discord.ButtonStyle.Danger)
 
     async def callback(self, interaction: discord.Interaction):
         # Create the embed
         embed = discord.Embed(
-            title="AD Lock",
+            title="Vertex Z | key system",
             description="To proceed with obtaining your key, please complete the verification process by clicking [this link](https://lootdest.org/s?og5sV6mJ). This helps us maintain security and prevent unauthorized access to our services.",
             color=0x000001,
         )
@@ -260,7 +260,7 @@ class GetKeyButton(discord.ui.Button):
 class RedeemKeyButton(discord.ui.Button):
     def __init__(self):
         super().__init__(
-            label="Redeem Key for Script", style=discord.ButtonStyle.secondary
+            label="🔐Redeem Key", style=discord.ButtonStyle.Success
         )
 
     async def callback(self, interaction: discord.Interaction):
