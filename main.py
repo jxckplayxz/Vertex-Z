@@ -101,11 +101,11 @@ async def ping(interaction: discord.Interaction):
 class PaymentSelect(discord.ui.Select):
     def __init__(self):
         options = [
-            discord.SelectOption(label="PayPal", description="Pay with PayPal"),
+            discord.SelectOption(label="🤖PayPal", description="Pay with PayPal"),
             discord.SelectOption(
-                label="Crypto (LTC,BTC)", description="Pay with Cryptocurrency"
+                label="🤑Crypto (LTC,BTC)", description="Pay with Cryptocurrency"
             ),
-            discord.SelectOption(label="Robux", description="Pay with Robux"),
+            discord.SelectOption(label="📈Robux - TOP OPTION", description="Pay with Robux"),
         ]
         super().__init__(
             placeholder="Buy perm key...", min_values=1, max_values=1, options=options
@@ -199,7 +199,7 @@ class CloseTicketView(discord.ui.View):
 
 class GetKeyButton(discord.ui.Button):
     def __init__(self):
-        super().__init__(label="Get Key", style=discord.ButtonStyle.secondary)
+        super().__init__(label="Get Key", style=discord.ButtonStyle.primary)
 
     async def callback(self, interaction: discord.Interaction):
         # Create the embed
