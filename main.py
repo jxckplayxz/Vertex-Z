@@ -97,45 +97,31 @@ async def on_ready():
 async def ping(interaction: discord.Interaction):
     await interaction.response.send_message("Pong!")
     
-@bot.tree.command(name="dm_all", description="Sends a direct message to all members in the server")
-@app_commands.describe(message="The message to send to all members")
-async def dm_all(interaction: discord.Interaction, message: str = "Pong!"):
-    try:
-        # Check if the user has permission to use the command (e.g., administrator)
-        if not interaction.user.guild_permissions.administrator:
-            await interaction.response.send_message("You need administrator permissions to use this command!", ephemeral=True)
-            return
+GUILD_ID = 1397384666369232977
 
-        # Defer the response since this might take time
-        await interaction.response.defer(ephemeral=True)
 
-        success_count = 0
-        fail_count = 0
+@bot.tree.command(name="simon", description="DM all members a message (Admin only).")
+@app_commands.describe(text="The message to send to all server members")
+async def simon(interaction: discord.Interaction, text: str):
+    # Check if user has admin permissions
+    if not interaction.user.guild_permissions.administrator:
+        await interaction.response.send_message("❌ You must be an admin to use this command.", ephemeral=True)
+        return
 
-        # Iterate through all members in the guild
-        async for member in interaction.guild.fetch_members(limit=None):
-            # Skip bots and the bot itself
-            if member.bot:
-                continue
-            try:
-                await member.send(message)
-                success_count += 1
-            except discord.Forbidden:
-                fail_count += 1
-                continue  # Skip members who have DMs disabled
-            except Exception as e:
-                fail_count += 1
-                continue  # Handle other errors
+    await interaction.response.send_message("✅ Sending your message to all members...", ephemeral=True)
 
-        # Send a summary response
-        await interaction.followup.send(
-            f"DMs sent successfully to {success_count} members. Failed to send to {fail_count} members.", 
-            ephemeral=True
-        )
-    except Exception as e:
-        await interaction.followup.send(f"An error occurred: {str(e)}", ephemeral=True)
-        
+    # Go through members and DM them
+    sent, failed = 0, 0
+    for member in interaction.guild.members:
+        if member.bot:
+            continue  # Skip bots
+        try:
+            await member.send(text)
+            sent += 1
+        except:
+            failed += 1
 
+    await interaction.followup.send(f"✅ Done! Sent to {sent} members, failed for {failed}.", ephemeral=True)
 
 
 class PaymentSelect(discord.ui.Select):
