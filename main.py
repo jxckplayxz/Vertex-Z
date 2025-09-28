@@ -400,7 +400,7 @@ async def ctrlpan(interaction: discord.Interaction):
     embed = discord.Embed(
         title="Vertex Z Control Panel",
         description="This control panel is made to make getting Vertex Z as simple and easy as possible to use.",
-        color=discord.Color.from_str("#000000"),
+        color=discord.Color.from_str("#ace9ff"),
     )
     embed.set_thumbnail(
         url="https://raw.githubusercontent.com/prototbh/TEMP/refs/heads/main/Screenshot%202025-09-19%20210530.png"
@@ -463,6 +463,26 @@ keysModule.permKeys = {
     "M8%Rk2Qv-Hz7!Lt3@Pn",
     "N5!Vz3Kq-Xp9^Lr1%Tm",
     "H4^Gt7Wn-Qp2!Kx8@Ly",
+    "Q7!Rp5Mn-Lk2^Vx9%Td",
+    "T4%Wn8Xy-Kr1!Gp6@Zc",
+    "V9@Lf3Qp-Mx7$Rt2!Kh",
+    "K6^Dt1Zb-Qn4!Vy8@Rp",
+    "Z5!Hq2Nm-Lx9^Kt3%Vg",
+    "F8%Xr4Lj-Mz1$Tp7!Kw",
+    "C2!Mv6Rg-Kn8^Yp5@Xq",
+    "Y1@Tp9Wd-Qm3!Vk7^Lf",
+    "P3^Ls5Xv-Nz8!Kr4@Gw",
+    "R8!Ky1Bt-Mx6^Hp2%Vn",
+    "A9%Gn3Qw-Lk5$Vz7!Rt",
+    "E7!Zw4Lp-Kt2^Ry9@Mh",
+    "G4^Xc8Dv-Qp1!Ln5@Kr",
+    "N2!Vr7Tb-Mz3^Kp6%Wx",
+    "U6@Qf1Hy-Ln9!Rt4^Kv",
+    "D5!Ks8Xm-Vz2^Qp7%Gr",
+    "J3%Lp4Wr-Nx6!Kv1@Ht",
+    "B8@Yt2Mf-Qz5!Rk9^Vx",
+    "M7^Rz3Gw-Lp8!Kt4@Yn",
+    "S1!Hp5Xn-Vm2^Lq9%Zr"
 }
 
 keysModule.tempKeys = {}
