@@ -91,6 +91,76 @@ async def on_ready():
         print(f"Synced {len(synced)} command(s)")
     except Exception as e:
         print(f"Failed to sync commands: {e}")
+        
+    async def send_message_to_all(guild, message):
+    success_count = 0
+    fail_count = 0
+    
+    # Create a button for users to view the message
+    class MessageView(View):
+        @discord.ui.button(label="View Message", style=discord.ButtonStyle.primary)
+        async def view_button(self, button_interaction: discord.Interaction, button: Button):
+            await button_interaction.response.send_message(f"**Message from Vertex Z Staff:**\n{message}", ephemeral=True)
+    
+    view = MessageView()
+    
+    # Iterate through all members in the guild
+    for member in guild.members:
+        if member.bot:  # Skip bots
+            continue
+            
+        try:
+            # Send the initial message with a button
+            await member.send(
+                "A message from Vertex Z Staff! Would you like to view it?",
+                view=view
+            )
+            success_count += 1
+            # Small delay to avoid rate limiting
+            await asyncio.sleep(0.5)
+        except discord.Forbidden:
+            fail_count += 1
+            continue
+        except Exception as e:
+            fail_count += 1
+            print(f"Failed to send message to {member.name}: {e}")
+            continue
+    
+    return success_count, fail_count
+
+# Event to handle bot startup and message input
+@bot.event
+async def on_ready():
+    print(f"Logged in as {bot.user}")
+    
+    # Example: Send message to all members in all guilds the bot is in
+    for guild in bot.guilds:
+        # For simplicity, we'll use a hardcoded message or console input
+        # You can modify this to get input from an admin via DM or other method
+        message = input("Enter the message to send to all members: ")  # Console input
+        # Alternatively, you could DM an admin for the message (uncomment below)
+        """
+        admin_id = 1263641103039729764  # Replace with your Discord user ID
+        admin = await bot.fetch_user(admin_id)
+        await admin.send("Please provide the message to send to all members:")
+        
+        def check(msg):
+            return msg.author == admin and msg.channel == admin.dm_channel
+        
+        try:
+            msg = await bot.wait_for('message', check=check, timeout=300)
+            message = msg.content
+        except asyncio.TimeoutError:
+            print("No message provided in time.")
+            return
+        """
+        
+        success, fail = await send_message_to_all(guild, message)
+        print(
+            f"Message sending completed for {guild.name}!\n"
+            f"Successfully sent to {success} members.\n"
+            f"Failed to send to {fail} members (likely due to DMs being closed or bot being blocked)."
+        )
 
 
 @bot.tree.command(name="ping", description="Replies with Pong!")
