@@ -95,6 +95,40 @@ async def on_ready():
 @bot.tree.command(name="ping", description="Replies with Pong!")
 async def ping(interaction: discord.Interaction):
     await interaction.response.send_message("Pong!")
+    
+@bot.tree.command(name="give", description="Send a Vertex Z perm key to a user (Admins only)")
+@app_commands.describe(
+    user="User to receive the key",
+    key_message="The key or note you want to send"
+)
+@app_commands.checks.has_permissions(administrator=True)
+async def give(interaction: discord.Interaction, user: discord.User, key_message: str):
+    """Admins can send a private embed to the user with the supplied key message."""
+    try:
+        embed = discord.Embed(
+            title="Vertex Z Purchase",
+            description=f"Thanks for purchasing a **Vertex Z** perm key\n`{key_message}`",
+            color=discord.Color.green()
+        )
+        embed.set_footer(text="Delivered by the server team")
+        await user.send(embed=embed)
+        await interaction.response.send_message(
+            f"✅ Key sent to {user.mention} in their DMs.",
+            ephemeral=True  # only the admin sees this confirmation
+        )
+    except discord.Forbidden:
+        await interaction.response.send_message(
+            "⚠️ I couldn't DM that user (their DMs might be closed).",
+            ephemeral=True
+        )
+
+@give.error
+async def give_error(interaction: discord.Interaction, error):
+    if isinstance(error, app_commands.MissingPermissions):
+        await interaction.response.send_message(
+            "❌ You need **Administrator** permission to use this command.",
+            ephemeral=True
+        )
 
 
 class PaymentSelect(discord.ui.Select):
