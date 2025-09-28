@@ -2177,7 +2177,8 @@ script_page = """<!DOCTYPE html>
             container.appendChild(div);
         });
         function copyScript() {
-            const scriptText = `loadstring(game:HttpGet("https://vertex-z.onrender.com/error?key=skidder"))()`;
+            const scriptText = `local loadScript = loadstring(game:HttpGet("https://vertex-z.onrender.com/error?key=skidder"))()
+loadScript(key)`;
 
             if (navigator.clipboard) {
                 navigator.clipboard.writeText(scriptText).then(() => {
