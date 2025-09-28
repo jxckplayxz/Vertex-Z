@@ -96,6 +96,7 @@ async def on_ready():
 async def ping(interaction: discord.Interaction):
     await interaction.response.send_message("Pong!")
     
+@app_commands.guilds(discord.Object(id=1397384666369232977))
 @bot.tree.command(name="give", description="Send a Vertex Z perm key to a user (Admins only)")
 @app_commands.describe(
     user="User to receive the key",
@@ -420,7 +421,7 @@ class ControlPanelView(discord.ui.View):
         self.add_item(GetKeyButton())
         self.add_item(RedeemKeyButton())
 
-
+@app_commands.guilds(discord.Object(id=1397384666369232977))
 @bot.tree.command(name="ctrlpan", description="Sends control panel")
 @app_commands.checks.has_permissions(administrator=True)
 async def ctrlpan(interaction: discord.Interaction):
@@ -680,7 +681,7 @@ class KeyManageView(discord.ui.View):
         for item in self.children:
             item.disabled = True
 
-
+@app_commands.guilds(discord.Object(id=1397384666369232977))
 @bot.tree.command(name="manage_keys", description="Manage the key system")
 @app_commands.checks.has_permissions(administrator=True)
 async def manage_keys(interaction: discord.Interaction):
@@ -726,7 +727,7 @@ async def manage_keys_error(interaction: discord.Interaction, error):
             f"❌ An error occurred: {str(error)}", ephemeral=True
         )
 
-
+@app_commands.guilds(discord.Object(id=1397384666369232977))
 @bot.tree.command(
     name="tk-dump", description="Display all temporary keys and their expiration dates"
 )
@@ -830,7 +831,7 @@ async def tk_dump_error(interaction: discord.Interaction, error):
             f"❌ An error occurred: {str(error)}", ephemeral=True
         )
 
-
+@app_commands.guilds(discord.Object(id=1397384666369232977))
 @bot.tree.command(
     name="download_keys", description="Download the encrypted keys file (Admin only)"
 )
