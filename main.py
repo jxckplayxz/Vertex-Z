@@ -3138,30 +3138,20 @@ def check_referrer_lvtfinal():
 
 
 @app.route("/rk")
-def validate_cookies_and_generate_key():
+def validate_cookie_and_generate_key():
     cookies = request.cookies
-    cookie_count = len(cookies)
-    if cookie_count != 3:
-        return jsonify({"success": False, "error": "Invalid cookie count"})
-    linkvt12_cookie = cookies.get("linkvt12_ck")
-    linkvt6_cookie = cookies.get("linkvt6_ck")
-
-    if not linkvt12_cookie or not linkvt6_cookie:
-        return jsonify({"success": False, "error": "Missing required cookies"})
-    if len(linkvt12_cookie) != 32 or len(linkvt6_cookie) != 32:
-        return jsonify({"success": False, "error": "Invalid cookie format"})
-
-    try:
-        int(linkvt12_cookie, 16)
-        int(linkvt6_cookie, 16)
-    except ValueError:
-        return jsonify({"success": False, "error": "Invalid cookie content"})
     linkvt_cookie = cookies.get("linkvt")
     expected_linkvt_value = "883uhdhjfdhdhsjkej3j400;'*(*(*$&#*@JHFGDS8JSHY1$"
 
+    if not linkvt_cookie:
+        return jsonify({"success": False, "error": "Missing required cookie"})
+
     if linkvt_cookie != expected_linkvt_value:
-        return jsonify({"success": False, "error": "Invalid main cookie value"})
+        return jsonify({"success": False, "error": "Invalid cookie value"})
+
+    # If cookie is valid, create and return a new key
     new_key = generate_random_key()
+    return jsonify({"success": True, "key": new_key})
 
     import pytz
     from datetime import datetime, timedelta
