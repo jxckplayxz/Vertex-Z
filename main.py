@@ -91,13 +91,25 @@ async def on_ready():
         print(f"Synced {len(synced)} command(s)")
     except Exception as e:
         print(f"Failed to sync commands: {e}")
+        
 
+ALLOWED_GUILD_ID = 1397384666369232977
+
+def only_in_allowed_guild():
+    async def predicate(interaction: Interaction) -> bool:
+        return (
+            interaction.guild is not None
+            and interaction.guild.id == ALLOWED_GUILD_ID
+        )
+    return app_commands.check(predicate)
+    
 @bot.tree.command(name="ping", description="Replies with Pong!")
+@only_in_allowed_guild()
 async def ping(interaction: discord.Interaction):
     await interaction.response.send_message("Pong!")
     
-@app_commands.guilds(discord.Object(id=1397384666369232977))
 @bot.tree.command(name="give", description="Send a Vertex Z perm key to a user (Admins only)")
+@only_in_allowed_guild()
 @app_commands.describe(
     user="User to receive the key",
     key_message="The key or note you want to send"
@@ -421,8 +433,9 @@ class ControlPanelView(discord.ui.View):
         self.add_item(GetKeyButton())
         self.add_item(RedeemKeyButton())
 
-@app_commands.guilds(discord.Object(id=1397384666369232977))
+
 @bot.tree.command(name="ctrlpan", description="Sends control panel")
+@only_in_allowed_guild()
 @app_commands.checks.has_permissions(administrator=True)
 async def ctrlpan(interaction: discord.Interaction):
     channel = bot.get_channel(CONTROL_PANEL_CHANNEL_ID)
@@ -681,8 +694,9 @@ class KeyManageView(discord.ui.View):
         for item in self.children:
             item.disabled = True
 
-@app_commands.guilds(discord.Object(id=1397384666369232977))
+
 @bot.tree.command(name="manage_keys", description="Manage the key system")
+@only_in_allowed_guild()
 @app_commands.checks.has_permissions(administrator=True)
 async def manage_keys(interaction: discord.Interaction):
     lua_content = read_keys_file()
@@ -727,10 +741,11 @@ async def manage_keys_error(interaction: discord.Interaction, error):
             f"❌ An error occurred: {str(error)}", ephemeral=True
         )
 
-@app_commands.guilds(discord.Object(id=1397384666369232977))
+
 @bot.tree.command(
     name="tk-dump", description="Display all temporary keys and their expiration dates"
 )
+@only_in_allowed_guild()
 @app_commands.checks.has_permissions(administrator=True)
 async def tk_dump(interaction: discord.Interaction):
     """Display all temporary keys and their expiration dates in an embed"""
@@ -831,10 +846,11 @@ async def tk_dump_error(interaction: discord.Interaction, error):
             f"❌ An error occurred: {str(error)}", ephemeral=True
         )
 
-@app_commands.guilds(discord.Object(id=1397384666369232977))
+
 @bot.tree.command(
     name="download_keys", description="Download the encrypted keys file (Admin only)"
 )
+@only_in_allowed_guild()
 @app_commands.checks.has_permissions(administrator=True)
 async def download_keys(interaction: discord.Interaction):
     """Download the encrypted keys.lua file"""
