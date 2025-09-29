@@ -434,7 +434,6 @@ class ControlPanelView(discord.ui.View):
 
 
 @bot.tree.command(name="ctrlpan", description="Sends control panel")
-@only_in_allowed_guild()
 @app_commands.checks.has_permissions(administrator=True)
 async def ctrlpan(interaction: discord.Interaction):
     channel = bot.get_channel(CONTROL_PANEL_CHANNEL_ID)
