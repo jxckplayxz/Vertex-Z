@@ -104,7 +104,6 @@ def only_in_allowed_guild():
     return app_commands.check(predicate)
     
 @bot.tree.command(name="ping", description="Replies with Pong!")
-@only_in_allowed_guild()
 async def ping(interaction: discord.Interaction):
     await interaction.response.send_message("Pong!")
     
