@@ -25,6 +25,7 @@ import asyncio
 import secrets
 import requests
 from discord.ui import Modal, TextInput
+from discord import app_commands, Interaction
 from datetime import datetime
 
 intents = discord.Intents.default()
