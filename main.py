@@ -94,28 +94,26 @@ async def on_ready():
         print(f"Failed to sync commands: {e}")
         
 
-ALLOWED_GUILD_ID = 1397384666369232977
+ALLOWED_ROLE_ID = 1397384666419433541
 
-def only_in_allowed_guild():
-    async def predicate(interaction: Interaction) -> bool:
-        return (
-            interaction.guild is not None
-            and interaction.guild.id == ALLOWED_GUILD_ID
-        )
+def has_role_id(role_id: int):
+    async def predicate(interaction: discord.Interaction) -> bool:
+        # Return True if the invoking member has the target role ID
+        return any(r.id == role_id for r in interaction.user.roles)
     return app_commands.check(predicate)
+
     
 @bot.tree.command(name="ping", description="Replies with Pong!")
-@only_in_allowed_guild()
+@has_role_id(ALLOWED_ROLE_ID)
 async def ping(interaction: discord.Interaction):
     await interaction.response.send_message("Pong!")
     
 @bot.tree.command(name="give", description="Send a Vertex Z perm key to a user (Admins only)")
-@only_in_allowed_guild()
+@has_role_id(ALLOWED_ROLE_ID)
 @app_commands.describe(
     user="User to receive the key",
     key_message="The key or note you want to send"
 )
-@app_commands.checks.has_permissions(administrator=True)
 async def give(interaction: discord.Interaction, user: discord.User, key_message: str):
     """Admins can send a private embed to the user with the supplied key message."""
     try:
@@ -697,8 +695,7 @@ class KeyManageView(discord.ui.View):
 
 
 @bot.tree.command(name="manage_keys", description="Manage the key system")
-@only_in_allowed_guild()
-@app_commands.checks.has_permissions(administrator=True)
+@has_role_id(ALLOWED_ROLE_ID)
 async def manage_keys(interaction: discord.Interaction):
     lua_content = read_keys_file()
     if lua_content is None:
@@ -746,8 +743,7 @@ async def manage_keys_error(interaction: discord.Interaction, error):
 @bot.tree.command(
     name="tk-dump", description="Display all temporary keys and their expiration dates"
 )
-@only_in_allowed_guild()
-@app_commands.checks.has_permissions(administrator=True)
+@has_role_id(ALLOWED_ROLE_ID)
 async def tk_dump(interaction: discord.Interaction):
     """Display all temporary keys and their expiration dates in an embed"""
     try:
@@ -851,8 +847,7 @@ async def tk_dump_error(interaction: discord.Interaction, error):
 @bot.tree.command(
     name="download_keys", description="Download the encrypted keys file (Admin only)"
 )
-@only_in_allowed_guild()
-@app_commands.checks.has_permissions(administrator=True)
+@has_role_id(ALLOWED_ROLE_ID)
 async def download_keys(interaction: discord.Interaction):
     """Download the encrypted keys.lua file"""
     try:
