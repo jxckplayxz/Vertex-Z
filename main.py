@@ -453,6 +453,7 @@ async def ctrlpan(interaction: discord.Interaction):
     )
     embed.set_footer(text="Vertex Z", icon_url=None)
 
+    await channel.send("👋 Hello @everyone, our script panel is back up!")
     await channel.send(embed=embed, view=ControlPanelView())
     await interaction.response.send_message("✅ Control panel sent.", ephemeral=True)
 
