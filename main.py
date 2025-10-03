@@ -463,7 +463,6 @@ async def refresh_control_panel(bot: commands.Bot):
     )
     embed.set_footer(text="Vertex Z", icon_url=None)
 
-    await channel.send("👋 Hello @everyone, our script panel is back up!")
     msg = await channel.send(embed=embed, view=ControlPanelView())
     last_message_id = msg.id
 
