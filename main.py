@@ -26,6 +26,7 @@ import secrets
 import requests
 from discord.ui import Modal, TextInput
 from discord import app_commands, Interaction
+from discord.ext import commands, tasks
 from datetime import datetime
 
 intents = discord.Intents.default()
@@ -141,6 +142,8 @@ async def give_error(interaction: discord.Interaction, error):
             "❌ You need **Administrator** permission to use this command.",
             ephemeral=True
         )
+
+
 
 
 class PaymentSelect(discord.ui.Select):
@@ -433,19 +436,25 @@ class ControlPanelView(discord.ui.View):
         self.add_item(RedeemKeyButton())
 
 
-@bot.tree.command(name="ctrlpan", description="Sends control panel")
-@app_commands.checks.has_permissions(administrator=True)
-async def ctrlpan(interaction: discord.Interaction):
+@tasks.loop(minutes=1)
+async def refresh_control_panel(bot: commands.Bot):
+    global last_message_id
     channel = bot.get_channel(CONTROL_PANEL_CHANNEL_ID)
-    if channel is None:
-        await interaction.response.send_message(
-            "❌ Could not find the control panel channel.", ephemeral=True
-        )
+    if not channel:
         return
 
+    # delete old panel if exists
+    if last_message_id:
+        try:
+            old_msg = await channel.fetch_message(last_message_id)
+            await old_msg.delete()
+        except discord.NotFound:
+            pass
+
+    # send new panel
     embed = discord.Embed(
         title="Vertex Z Control Panel",
-        description="This control panel is made to make getting Vertex Z as simple and easy as possible to use.",
+        description="This control panel is made to make getting Vertex Z key as simple and easy as possible to use.",
         color=discord.Color.from_str("#ace9ff"),
     )
     embed.set_thumbnail(
@@ -454,15 +463,31 @@ async def ctrlpan(interaction: discord.Interaction):
     embed.set_footer(text="Vertex Z", icon_url=None)
 
     await channel.send("👋 Hello @everyone, our script panel is back up!")
-    await channel.send(embed=embed, view=ControlPanelView())
-    await interaction.response.send_message("✅ Control panel sent.", ephemeral=True)
+    msg = await channel.send(embed=embed, view=ControlPanelView())
+    last_message_id = msg.id
 
+# Command to start auto-refresh
+@bot.tree.command(name="ctrlpan", description="Sends auto-refreshing control panel")
+@app_commands.checks.has_permissions(administrator=True)
+async def ctrlpan(interaction: discord.Interaction):
+    if not refresh_control_panel.is_running():
+        refresh_control_panel.start(interaction.client)
+        await interaction.response.send_message(
+            "✅ Auto-refreshing control panel started (every1 minutes).",
+            ephemeral=True
+        )
+    else:
+        await interaction.response.send_message(
+            "⚠️ Control panel is already running.",
+            ephemeral=True
+        )
 
 @ctrlpan.error
 async def ctrlpan_error(interaction: discord.Interaction, error):
     if isinstance(error, app_commands.MissingPermissions):
         await interaction.response.send_message(
-            "❌ You don't have permission to use this command.", ephemeral=True
+            "❌ You don't have permission to use this command.",
+            ephemeral=True
         )
 
 
