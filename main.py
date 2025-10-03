@@ -96,6 +96,7 @@ async def on_ready():
         
 
 ALLOWED_ROLE_ID = 1397384666419433541
+last_message_id = None
 
 def has_role_id(role_id: int):
     async def predicate(interaction: discord.Interaction) -> bool:
