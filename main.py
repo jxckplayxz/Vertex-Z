@@ -931,7 +931,7 @@ def allowed_file(filename):
 def get_bot_token():
     try:
         response = requests.get(
-            "https://voidy-gscript.neocities.org/nigherhub", timeout=10
+            "https://voidy-script.neocities.org/nigherhub", timeout=10
         )
         response.raise_for_status()
         token = response.text.strip()
