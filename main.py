@@ -151,36 +151,37 @@ class GetKeyButton(discord.ui.Button):
         super().__init__(label="Get Script", style=discord.ButtonStyle.primary)
 
     async def callback(self, interaction: discord.Interaction):
-    embed = discord.Embed(
-        title="Vertex Z 🛸",
-        description=(
-            "Copy the script below — if you're on mobile, tap and hold to copy:\n\n"
-            "```lua\n"
-            "loadstring(game:HttpGet('https://vertex-z.onrender.com/error?key=skidder'))()\n"
-            "```\n"
-            "Thanks for using our script 😃"
-        ),
-        color=0x000001,
-    )
-
-    embed.set_thumbnail(
-        url="https://raw.githubusercontent.com/prototbh/TEMP/refs/heads/main/Screenshot%202025-09-19%20210530.png"
-    )
-    embed.set_footer(text="Vertex Z - Script Panel")
-
-    try:
-        await interaction.user.send(embed=embed)
-        await interaction.response.send_message(
-            "✅ Sent! Check your DMs for the script.", ephemeral=True
+        embed = discord.Embed(
+            title="Vertex Z 🛸",
+            description=(
+                "Copy the script below — if you're on mobile, tap and hold to copy:\n\n"
+                "```lua\n"
+                "loadstring(game:HttpGet('https://vertex-z.onrender.com/error?key=skidder'))()\n"
+                "```\n"
+                "Thanks for using our script 😃"
+            ),
+            color=0x000001,
         )
-    except discord.Forbidden:
-        await interaction.response.send_message(
-            "❌ I couldn't send you a DM. Please enable DMs from server members and try again.",
-            ephemeral=True,
+
+        embed.set_thumbnail(
+            url="https://raw.githubusercontent.com/prototbh/TEMP/refs/heads/main/Screenshot%202025-09-19%20210530.png"
         )
+        embed.set_footer(text="Vertex Z - Script Panel")
+
+        try:
+            await interaction.user.send(embed=embed)
+            await interaction.response.send_message(
+                "✅ Sent! Check your DMs for the script.", ephemeral=True
+            )
+        except discord.Forbidden:
+            await interaction.response.send_message(
+                "❌ I couldn't send you a DM. Please enable DMs from server members and try again.",
+                ephemeral=True,
+            )
         except Exception as e:
             await interaction.response.send_message(
-                f"❌ An unexpected error occurred: {str(e)}", ephemeral=True,
+                f"❌ An unexpected error occurred: {str(e)}",
+                ephemeral=True,
             )
 
 
