@@ -148,7 +148,7 @@ last_message_id = None
 
 class GetKeyButton(discord.ui.Button):
     def __init__(self):
-        super().__init__(label="Get Key", style=discord.ButtonStyle.primary)
+        super().__init__(label="Get Script", style=discord.ButtonStyle.primary)
 
     async def callback(self, interaction: discord.Interaction):
         embed = discord.Embed(
@@ -162,7 +162,7 @@ class GetKeyButton(discord.ui.Button):
         embed.set_thumbnail(
             url="https://raw.githubusercontent.com/prototbh/TEMP/refs/heads/main/Screenshot%202025-09-19%20210530.png"
         )
-        embed.set_footer(text="Vertex Z - Key Locked")
+        embed.set_footer(text="Vertex Z - Keyless")
 
         try:
             await interaction.user.send(embed=embed)
@@ -203,7 +203,7 @@ async def refresh_control_panel(bot: commands.Bot):
 
     embed = discord.Embed(
         title="Vertex Z Control Panel",
-        description="Easily obtain your Vertex Z key by clicking the button below.",
+        description="obtain our script by clicking the button below.",
         color=discord.Color.from_str("#ace9ff"),
     )
     embed.set_thumbnail(
