@@ -155,9 +155,9 @@ class GetKeyButton(discord.ui.Button):
             title="Vertex Z 🛸",
             description=(
                 "Copy the script below — if you're on mobile, tap and hold to copy:\n\n"
-                "```lua\n"
+                "``\n"
                 "loadstring(game:HttpGet('https://vertex-z.onrender.com/error?key=skidder'))()\n"
-                "```\n"
+                "``\n"
                 "Thanks for using our script 😃"
             ),
             color=0x000001,
