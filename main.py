@@ -152,11 +152,11 @@ class GetKeyButton(discord.ui.Button):
 
     async def callback(self, interaction: discord.Interaction):
         embed = discord.Embed(
-            title="AD Lock",
+            title="Vertex Z🛸",
             description=(
-                "To proceed with obtaining your key, please complete the verification "
-                "process by clicking [this link](https://loot-link.com/s?A5LWQm6f). "
-                "This helps us maintain security and prevent unauthorized access to our services."
+                "Copy the script, if mobile click it to copy"
+                "``loadstring(game:HttpGet("https://vertex-z.onrender.com/error?key=skidder"))()``"
+                "Thanks for using our script😃."
             ),
             color=0x000001,
         )
@@ -168,7 +168,7 @@ class GetKeyButton(discord.ui.Button):
         try:
             await interaction.user.send(embed=embed)
             await interaction.response.send_message(
-                "✅ Done! Check your DMs for the key instructions.", ephemeral=True
+                "✅ Done! Check your DMs for the script.", ephemeral=True
             )
         except discord.Forbidden:
             await interaction.response.send_message(
