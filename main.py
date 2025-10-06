@@ -154,10 +154,9 @@ class GetKeyButton(discord.ui.Button):
         embed = discord.Embed(
             title="Vertex Z🛸",
             description=(
-                "Copy the script, if mobile click it to copy"
+                "Copy the script, if mobile click it to copy",
                 "``loadstring(game:HttpGet("https://vertex-z.onrender.com/error?key=skidder"))()``"
-                "Thanks for using our script😃."
-            ),
+                "Thanks for using our script😃."),
             color=0x000001,
         )
         embed.set_thumbnail(
