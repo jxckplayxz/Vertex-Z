@@ -93,7 +93,7 @@ async def on_ready():
         print(f"Synced {len(synced)} command(s)")
     except Exception as e:
         print(f"Failed to sync commands: {e}")
-        
+
 
 ALLOWED_ROLE_ID = 1397384666419433541
 last_message_id = None
@@ -104,12 +104,12 @@ def has_role_id(role_id: int):
         return any(r.id == role_id for r in interaction.user.roles)
     return app_commands.check(predicate)
 
-    
+
 @bot.tree.command(name="ping", description="Replies with Pong!")
 @has_role_id(ALLOWED_ROLE_ID)
 async def ping(interaction: discord.Interaction):
     await interaction.response.send_message("Pong!")
-    
+
 @bot.tree.command(name="give", description="Send a Vertex Z perm key to a user (Admins only)")
 @has_role_id(ALLOWED_ROLE_ID)
 @app_commands.describe(
@@ -144,117 +144,20 @@ async def give_error(interaction: discord.Interaction, error):
             ephemeral=True
         )
 
-
-
-
-class PaymentSelect(discord.ui.Select):
-    def __init__(self):
-        options = [
-            discord.SelectOption(label="🤖PayPal", description="Pay with PayPal"),
-            discord.SelectOption(
-                label="🤑Crypto (LTC,BTC)", description="Pay with Cryptocurrency"
-            ),
-            discord.SelectOption(label="📈Robux - TOP OPTION", description="Pay with Robux"),
-        ]
-        super().__init__(
-            placeholder="Buy perm key...", min_values=1, max_values=1, options=options
-        )
-
-    async def callback(self, interaction: discord.Interaction):
-        ticket_number = random.randint(1, 1000)
-        category = bot.get_channel(1397640585527169095)
-        if category is None:
-            await interaction.response.send_message(
-                "❌ Could not find the ticket category.", ephemeral=True
-            )
-            return
-        overwrites = {
-            interaction.guild.default_role: discord.PermissionOverwrite(
-                view_channel=False
-            ),
-            interaction.user: discord.PermissionOverwrite(
-                view_channel=True, send_messages=True, read_message_history=True
-            ),
-        }
-        support_role = interaction.guild.get_role(1397384666419433541)
-        if support_role:
-            overwrites[support_role] = discord.PermissionOverwrite(
-                view_channel=True,
-                send_messages=True,
-                read_message_history=True,
-                manage_messages=True,
-                manage_channels=True,
-            )
-        try:
-            channel = await category.create_text_channel(
-                name=f"Buyer-Ticket-{ticket_number}",
-                overwrites=overwrites,
-                topic=f"Payment ticket for {interaction.user.name} - {self.values[0]}",
-            )
-        except Exception as e:
-            await interaction.response.send_message(
-                f"❌ Failed to create ticket channel: {e}", ephemeral=True
-            )
-            return
-        embed = discord.Embed(
-            title="Buyer Info",
-            description=f"Payment method selected: {self.values[0]}",
-            color=discord.Color.from_str("#000000"),
-        )
-        embed.set_thumbnail(
-            url="https://raw.githubusercontent.com/prototbh/TEMP/refs/heads/main/Screenshot%202025-09-19%20210530.png"
-        )
-        embed.add_field(
-            name="User",
-            value=f"{interaction.user.mention} ({interaction.user.name})",
-            inline=True,
-        )
-        embed.add_field(name="User ID", value=interaction.user.id, inline=True)
-        embed.add_field(
-            name="Account Created",
-            value=interaction.user.created_at.strftime("%Y-%m-%d %H:%M:%S"),
-            inline=False,
-        )
-        embed.set_footer(text="Vertex Z", icon_url=None)
-        view = CloseTicketView()
-        await channel.send(
-            content=f"{interaction.user.mention} {support_role.mention if support_role else ''}",
-            embed=embed,
-            view=view,
-        )
-
-        await interaction.response.send_message(
-            f"✅ Ticket created! Check {channel.mention}", ephemeral=True
-        )
-
-
-class CloseTicketView(discord.ui.View):
-    def __init__(self):
-        super().__init__(timeout=None)
-
-    @discord.ui.button(
-        label="Close Ticket", style=discord.ButtonStyle.danger, custom_id="close_ticket"
-    )
-    async def close_ticket(
-        self, interaction: discord.Interaction, button: discord.ui.Button
-    ):
-        if not any(role.id == 1397384666419433541 for role in interaction.user.roles):
-            await interaction.response.send_message(
-                "❌ You don't have permission to close tickets.", ephemeral=True
-            )
-            return
-        await interaction.channel.delete()
-
+last_message_id = None
 
 class GetKeyButton(discord.ui.Button):
     def __init__(self):
         super().__init__(label="Get Key", style=discord.ButtonStyle.primary)
 
     async def callback(self, interaction: discord.Interaction):
-        # Create the embed
         embed = discord.Embed(
             title="AD Lock",
-            description="To proceed with obtaining your key, please complete the verification process by clicking [this link](https://loot-link.com/s?A5LWQm6f). This helps us maintain security and prevent unauthorized access to our services.",
+            description=(
+                "To proceed with obtaining your key, please complete the verification "
+                "process by clicking [this link](https://loot-link.com/s?A5LWQm6f). "
+                "This helps us maintain security and prevent unauthorized access to our services."
+            ),
             color=0x000001,
         )
         embed.set_thumbnail(
@@ -263,178 +166,25 @@ class GetKeyButton(discord.ui.Button):
         embed.set_footer(text="Vertex Z - Key Locked")
 
         try:
-            # Send the embed to the user's DMs
             await interaction.user.send(embed=embed)
             await interaction.response.send_message(
-                "Done ✅ Check your DMs.", ephemeral=True
+                "✅ Done! Check your DMs for the key instructions.", ephemeral=True
             )
         except discord.Forbidden:
-            # If the user has DMs disabled
             await interaction.response.send_message(
                 "❌ I couldn't send you a DM. Please enable DMs from server members and try again.",
                 ephemeral=True,
             )
         except Exception as e:
             await interaction.response.send_message(
-                f"❌ An error occurred: {str(e)}", ephemeral=True
+                f"❌ An unexpected error occurred: {str(e)}", ephemeral=True,
             )
-
-
-class RedeemKeyButton(discord.ui.Button):
-    def __init__(self):
-        super().__init__(
-            label="Redeem Key for Script", style=discord.ButtonStyle.secondary
-        )
-
-    async def callback(self, interaction: discord.Interaction):
-        modal = KeyRedeemModal()
-        await interaction.response.send_modal(modal)
-
-
-class KeyRedeemModal(discord.ui.Modal, title="Key Redemption"):
-    def __init__(self):
-        super().__init__()
-        self.key_input = discord.ui.TextInput(
-            label="Please input your key below",
-            placeholder="Enter your Vertex Z key here...",
-            style=discord.TextStyle.short,
-            required=True,
-            max_length=50,
-        )
-        self.add_item(self.key_input)
-
-    async def on_submit(self, interaction: discord.Interaction):
-        await interaction.response.defer(ephemeral=True)
-        user_key = self.key_input.value.strip()
-        lua_content = read_keys_file()
-        if lua_content is None:
-            await interaction.followup.send(
-                "❌ Error reading keys database. Please try again later.",
-                ephemeral=True,
-            )
-            return
-        perm_keys = extract_keys_from_lua(lua_content)
-        temp_keys = extract_temp_keys_from_lua(lua_content)
-        key_type = None
-        expiry_time = None
-        if user_key in perm_keys:
-            key_type = "perm"
-        elif user_key in temp_keys:
-            key_type = "temp"
-            expiry_time = temp_keys[user_key]
-        if not key_type:
-            await interaction.followup.send(
-                "❌ Invalid key. Please check your key and try again.", ephemeral=True
-            )
-            return
-        embed = discord.Embed(
-            title="Key Redeemed 🔓",
-            description="Thank You For Using Vertex Z",
-            color=0x000001,
-        )
-
-        lua_code = f"""local key = "{user_key}"
-local loadScript = loadstring(game:HttpGet("https://vertex-z.onrender.com/error?key=skidder"))()
-loadScript(key)"""
-
-        embed.add_field(
-            name="Script Code", value=f"``\n{lua_code}\n``", inline=False
-        )
-        if key_type == "perm":
-            embed.add_field(
-                name="⏳ Key Validity", value="**Permanent** 🔄", inline=True
-            )
-        else:
-            try:
-                from datetime import datetime
-                import pytz
-
-                est = pytz.timezone("US/Eastern")
-                expiry_datetime = datetime.strptime(
-                    expiry_time, "%Y-%m-%d %H:%M:%S EST"
-                )
-                expiry_datetime = est.localize(expiry_datetime)
-                current_time = datetime.now(est)
-
-                time_diff = expiry_datetime - current_time
-                total_seconds = int(time_diff.total_seconds())
-
-                if total_seconds <= 0:
-                    embed.add_field(
-                        name="⏳ Key Validity", value="**EXPIRED** ❌", inline=True
-                    )
-                else:
-                    hours = total_seconds // 3600
-                    minutes = (total_seconds % 3600) // 60
-                    seconds = total_seconds % 60
-                    expiry_timestamp = int(expiry_datetime.timestamp())
-                    time_display = f"Expires <t:{expiry_timestamp}:R>"
-
-                    embed.add_field(
-                        name="⏳ Key Validity", value=f"**{time_display}**", inline=True
-                    )
-
-            except Exception as e:
-                embed.add_field(
-                    name="⏳ Key Validity", value="**Valid** ✅", inline=True
-                )
-
-        embed.set_thumbnail(
-            url="https://raw.githubusercontent.com/prototbh/TEMP/refs/heads/main/Screenshot%202025-09-19%20210530.png"
-        )
-        embed.set_footer(text="Use this code inside your executor.")
-
-        try:
-            await interaction.user.send(embed=embed)
-            await interaction.followup.send(
-                "✅ Key redeemed! Check your DMs for the script.", ephemeral=True
-            )
-        except discord.Forbidden:
-            await interaction.followup.send(
-                "❌ I couldn't send you a DM. Please enable DMs from server members.",
-                ephemeral=True,
-            )
-        except Exception as e:
-            await interaction.followup.send(
-                f"❌ An error occurred: {str(e)}", ephemeral=True
-            )
-
-
-def extract_temp_keys_from_lua(lua_content):
-    temp_keys = {}
-    try:
-        start_idx = lua_content.find("tempKeys = {")
-        if start_idx == -1:
-            return temp_keys
-
-        start_bracket = lua_content.find("{", start_idx) + 1
-        end_bracket = lua_content.find("}", start_bracket)
-        temp_keys_section = lua_content[start_bracket:end_bracket]
-
-        lines = temp_keys_section.split("\n")
-        for line in lines:
-            line = line.strip()
-            if line.startswith('["') and '"] = "' in line:
-                try:
-                    key_end = line.find('"] = "')
-                    key = line[2:key_end]
-                    expiry_str = line[key_end + 6 : -2]
-                    temp_keys[key] = expiry_str
-                except Exception:
-                    continue
-
-    except Exception as e:
-        print(f"Error extracting temp keys: {e}")
-
-    return temp_keys
 
 
 class ControlPanelView(discord.ui.View):
     def __init__(self):
         super().__init__(timeout=None)
-        self.add_item(PaymentSelect())
         self.add_item(GetKeyButton())
-        self.add_item(RedeemKeyButton())
 
 
 @tasks.loop(minutes=1)
@@ -452,44 +202,44 @@ async def refresh_control_panel(bot: commands.Bot):
         except discord.NotFound:
             pass
 
-    # send new panel
     embed = discord.Embed(
         title="Vertex Z Control Panel",
-        description="This control panel is made to make getting Vertex Z key as simple and easy as possible to use.",
+        description="Easily obtain your Vertex Z key by clicking the button below.",
         color=discord.Color.from_str("#ace9ff"),
     )
     embed.set_thumbnail(
         url="https://raw.githubusercontent.com/prototbh/TEMP/refs/heads/main/Screenshot%202025-09-19%20210530.png"
     )
-    embed.set_footer(text="Vertex Z", icon_url=None)
+    embed.set_footer(text="Vertex Z")
 
     msg = await channel.send(embed=embed, view=ControlPanelView())
     last_message_id = msg.id
 
-# Command to start auto-refresh
+
+# Command to start auto-refreshing control panel
 @bot.tree.command(name="ctrlpan", description="Sends auto-refreshing control panel")
 @app_commands.checks.has_permissions(administrator=True)
 async def ctrlpan(interaction: discord.Interaction):
     if not refresh_control_panel.is_running():
         refresh_control_panel.start(interaction.client)
         await interaction.response.send_message(
-            "✅ Auto-refreshing control panel started (every1 minutes).",
-            ephemeral=True
+            "✅ Auto-refreshing control panel started (every 1 minute).",
+            ephemeral=True,
         )
     else:
         await interaction.response.send_message(
             "⚠️ Control panel is already running.",
-            ephemeral=True
+            ephemeral=True,
         )
+
 
 @ctrlpan.error
 async def ctrlpan_error(interaction: discord.Interaction, error):
     if isinstance(error, app_commands.MissingPermissions):
         await interaction.response.send_message(
             "❌ You don't have permission to use this command.",
-            ephemeral=True
+            ephemeral=True,
         )
-
 
 def xor_encrypt_decrypt(data, key):
     if isinstance(data, str):
