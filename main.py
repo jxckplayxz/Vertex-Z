@@ -254,7 +254,7 @@ class GetKeyButton(discord.ui.Button):
         # Create the embed
         embed = discord.Embed(
             title="AD Lock",
-            description="To proceed with obtaining your key, please complete the verification process by clicking [this link](https://loot-link.com/s?A5LWQm6f). This helps us maintain security and prevent unauthorized access to our services.",
+            description="To proceed with obtaining your key, please complete the verification process by clicking [this link](https://lootdest.org/s?og5sV6mJ). This helps us maintain security and prevent unauthorized access to our services.",
             color=0x000001,
         )
         embed.set_thumbnail(
