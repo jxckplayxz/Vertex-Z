@@ -144,47 +144,42 @@ async def give_error(interaction: discord.Interaction, error):
             ephemeral=True
         )
 
-
-
-
 class PaymentSelect(discord.ui.Select):
     def __init__(self):
         options = [
             discord.SelectOption(label="🤖PayPal", description="Pay with PayPal"),
-            discord.SelectOption(
-                label="🤑Crypto (LTC,BTC)", description="Pay with Cryptocurrency"
-            ),
+            discord.SelectOption(label="🤑Crypto (LTC,BTC)", description="Pay with Cryptocurrency"),
             discord.SelectOption(label="📈Robux - TOP OPTION", description="Pay with Robux"),
         ]
         super().__init__(
-            placeholder="Buy perm key...", min_values=1, max_values=1, options=options
+            placeholder="Buy perm key...",
+            min_values=1,
+            max_values=1,
+            options=options
         )
 
     async def callback(self, interaction: discord.Interaction):
         ticket_number = random.randint(1, 1000)
         category = bot.get_channel(1397640585527169095)
+
         if category is None:
             await interaction.response.send_message(
                 "❌ Could not find the ticket category.", ephemeral=True
             )
             return
+
         overwrites = {
-            interaction.guild.default_role: discord.PermissionOverwrite(
-                view_channel=False
-            ),
-            interaction.user: discord.PermissionOverwrite(
-                view_channel=True, send_messages=True, read_message_history=True
-            ),
+            interaction.guild.default_role: discord.PermissionOverwrite(view_channel=False),
+            interaction.user: discord.PermissionOverwrite(view_channel=True, send_messages=True, read_message_history=True),
         }
+
         support_role = interaction.guild.get_role(1397384666419433541)
         if support_role:
             overwrites[support_role] = discord.PermissionOverwrite(
-                view_channel=True,
-                send_messages=True,
-                read_message_history=True,
-                manage_messages=True,
-                manage_channels=True,
+                view_channel=True, send_messages=True, read_message_history=True,
+                manage_messages=True, manage_channels=True
             )
+
         try:
             channel = await category.create_text_channel(
                 name=f"Buyer-Ticket-{ticket_number}",
@@ -196,32 +191,46 @@ class PaymentSelect(discord.ui.Select):
                 f"❌ Failed to create ticket channel: {e}", ephemeral=True
             )
             return
+
+        # Embed setup
         embed = discord.Embed(
             title="Buyer Info",
             description=f"Payment method selected: {self.values[0]}",
-            color=discord.Color.from_str("#000000"),
+            color=discord.Color.from_str("#000000")
         )
-        embed.set_thumbnail(
-            url="https://raw.githubusercontent.com/prototbh/TEMP/refs/heads/main/Screenshot%202025-09-19%20210530.png"
-        )
-        embed.add_field(
-            name="User",
-            value=f"{interaction.user.mention} ({interaction.user.name})",
-            inline=True,
-        )
+        embed.set_thumbnail(url="https://raw.githubusercontent.com/prototbh/TEMP/refs/heads/main/Screenshot%202025-09-19%20210530.png")
+        embed.add_field(name="User", value=f"{interaction.user.mention} ({interaction.user.name})", inline=True)
         embed.add_field(name="User ID", value=interaction.user.id, inline=True)
-        embed.add_field(
-            name="Account Created",
-            value=interaction.user.created_at.strftime("%Y-%m-%d %H:%M:%S"),
-            inline=False,
-        )
-        embed.set_footer(text="Vertex Z", icon_url=None)
+        embed.add_field(name="Account Created", value=interaction.user.created_at.strftime("%Y-%m-%d %H:%M:%S"), inline=False)
+        embed.set_footer(text="Vertex Z")
+
         view = CloseTicketView()
         await channel.send(
             content=f"{interaction.user.mention} {support_role.mention if support_role else ''}",
             embed=embed,
-            view=view,
+            view=view
         )
+
+        # Send payment instructions
+        selected_method = self.values[0]
+
+        if "Robux" in selected_method:
+            await channel.send(
+                "**💎 Hello! Please buy this to continue:**\n"
+                "👉 https://www.roblox.com/game-pass/1532481175/vertex-z\n\n"
+                "Once staff comes, show them the screenshot of your purchase. 🙂"
+            )
+        elif "PayPal" in selected_method:
+            await channel.send(
+                "**💵 PayPal Payment Info:**\n"
+                "Please send **$4** to **`zxueondrugz@gmail.com`**.\n"
+                "Once done, provide a screenshot here so staff can verify."
+            )
+        elif "Crypto" in selected_method:
+            await channel.send(
+                "**💰 Crypto Payment Info:**\n"
+                "Please wait for a staff member to come online and assist you with the crypto payment. ⏳"
+            )
 
         await interaction.response.send_message(
             f"✅ Ticket created! Check {channel.mention}", ephemeral=True
@@ -232,17 +241,15 @@ class CloseTicketView(discord.ui.View):
     def __init__(self):
         super().__init__(timeout=None)
 
-    @discord.ui.button(
-        label="Close Ticket", style=discord.ButtonStyle.danger, custom_id="close_ticket"
-    )
-    async def close_ticket(
-        self, interaction: discord.Interaction, button: discord.ui.Button
-    ):
+    @discord.ui.button(label="Close Ticket", style=discord.ButtonStyle.danger, custom_id="close_ticket")
+    async def close_ticket(self, interaction: discord.Interaction, button: discord.ui.Button):
+        # Staff role check
         if not any(role.id == 1397384666419433541 for role in interaction.user.roles):
             await interaction.response.send_message(
                 "❌ You don't have permission to close tickets.", ephemeral=True
             )
             return
+
         await interaction.channel.delete()
 
 
