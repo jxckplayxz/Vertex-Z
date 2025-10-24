@@ -3050,16 +3050,6 @@ def error():
         )
     return "Error page has been deleted or moved", 403
 
-@app.route("pastebin8yu7y86h")
-def pastebin8yu7y86h0():
-    if request.args.get("key") == "skidder":
-        return send_file(
-            "mainsc.txt",
-            mimetype="text/plain",
-            as_attachment=False
-        )
-    return "Error page has been deleted or moved", 403
-
 ADMIN_PASSWORD = "admin21"
 
 
