@@ -246,7 +246,7 @@ class CloseTicketView(discord.ui.View):
         # Staff role check
         if not any(role.id == 1397384666419433541 for role in interaction.user.roles):
             await interaction.response.send_message(
-                "❌ You don't have permission to close tickets.", ephemeral=True
+                "❌ You don't have permission to close tickets..", ephemeral=True
             )
             return
 
