@@ -1521,7 +1521,7 @@ home_page = """<!DOCTYPE html>
       <i class="fas fa-bolt"></i>
       The Ultimate Brainrot Script
     </div>
-    <h1>The #1 Script<br />For <span>Steal a Brainrot</span></h1>
+    <h1>The #1 Script<br />For <span>Any GAME</span></h1>
     <p>Trusted by thousands. Lightning fast execution. Built for absolute domination. Experience 24/7 uptime with constant updates and premium features.</p>
     <div class="button-group">
       <button class="cta-btn primary" onclick="window.open('https://vertex-z.onrender.com/script', '_blank')">
