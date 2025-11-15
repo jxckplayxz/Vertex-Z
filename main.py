@@ -3050,6 +3050,16 @@ def error():
         )
     return "Error page has been deleted or moved", 403
 
+@app.route("/sab")
+def sab():
+    if request.args.get("key") == "skidder":
+        return send_file(
+            "sab.txt",
+            mimetype="text/plain",
+            as_attachment=False
+        )
+    return "Error page has been deleted or moved", 403
+
 ADMIN_PASSWORD = "admin21"
 
 
