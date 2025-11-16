@@ -28,6 +28,7 @@ from discord.ui import Modal, TextInput
 from discord import app_commands, Interaction
 from discord.ext import commands, tasks
 from datetime import datetime
+from flask import Flask, redirect
 
 intents = discord.Intents.default()
 bot = commands.Bot(command_prefix="!", intents=intents)
@@ -3059,6 +3060,10 @@ def sab():
             as_attachment=False
         )
     return "Error page has been deleted or moved", 403
+
+@app.route("/discord")
+def discord_redirect():
+    return redirect("https://discord.gg/hCTCQwPKd3", code=302)
 
 ADMIN_PASSWORD = "admin21"
 
