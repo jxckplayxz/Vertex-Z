@@ -3061,6 +3061,16 @@ def sab():
         )
     return "Error page has been deleted or moved", 403
 
+@app.route("/mm2")
+def sab():
+    if request.args.get("key") == "skidder":
+        return send_file(
+            "mm2.txt",
+            mimetype="text/plain",
+            as_attachment=False
+        )
+    return "Error page has been deleted or moved", 403
+
 @app.route("/discord")
 def discord_redirect():
     return redirect("https://discord.gg/hCTCQwPKd3", code=302)
