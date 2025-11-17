@@ -3062,7 +3062,7 @@ def sab():
     return "Error page has been deleted or moved", 403
 
 @app.route("/mm2")
-def sab():
+def mm2():
     if request.args.get("key") == "skidder":
         return send_file(
             "mm2.txt",
