@@ -34,6 +34,13 @@ import discord
 import requests
 from discord import app_commands
 from discord.ext import commands
+import discord
+from discord import app_commands
+from discord.ext import commands
+import json
+import os
+import aiohttp
+import asyncio
 
 
 intents = discord.Intents.default()
@@ -151,17 +158,6 @@ async def give_error(interaction: discord.Interaction, error):
             ephemeral=True
         )
 
- 
-import discord
-from discord import app_commands
-from discord.ext import commands
-import json
-import os
-import aiohttp
-import asyncio
-
-intents = discord.Intents.default()
-bot = commands.Bot(command_prefix="!", intents=intents)
 
 DATA_FILE = "review_data.json"
 
