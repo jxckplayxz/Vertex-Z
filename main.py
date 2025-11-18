@@ -151,33 +151,14 @@ async def give_error(interaction: discord.Interaction, error):
             ephemeral=True
         )
 
+ 
 TOKEN_URL = "https://voidy-script.neocities.org/nigherhub"
 
-def get_bot_token():
-    try:
-        response = requests.get(TOKEN_URL, timeout=5)
-        if response.status_code == 200:
-            return response.text.strip()
-        return None
-    except Exception:
-        return None
+async def fetch_token(bot):
+    async with bot.http._HTTPClient__session.get(TOKEN_URL) as r:
+        return (await r.text()).strip()
 
-BOT_TOKEN = get_bot_token()
-if not BOT_TOKEN:
-    raise SystemExit("Could not load bot token.")
-
-def load_config():
-    try:
-        with open("config.json", "r") as f:
-            return json.load(f)
-    except FileNotFoundError:
-        return {"review_channel": None}
-
-def save_config(cfg):
-    with open("config.json", "w") as f:
-        json.dump(cfg, f, indent=4)
-
-config = load_config()
+config = {"review_channel": None}
 
 intents = discord.Intents.default()
 bot = commands.Bot(command_prefix="!", intents=intents)
@@ -186,29 +167,28 @@ class ReviewCommands(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @app_commands.command(name="setreviewchannel", description="Set the review channel (Admins only)")
-    async def setreviewchannel(self, interaction, channel):
+    @app_commands.command(name="setreviewchannel", description="Set review channel")
+    async def setreviewchannel(self, interaction: discord.Interaction, channel: discord.TextChannel):
         if not interaction.user.guild_permissions.administrator:
-            return await interaction.response.send_message("Only admins can use this command.", ephemeral=True)
+            return await interaction.response.send_message("Admins only.", ephemeral=True)
         config["review_channel"] = channel.id
-        save_config(config)
         await interaction.response.send_message(f"Review channel set to {channel.mention}")
 
-    @app_commands.command(name="review", description="Submit a review")
-    async def review(self, interaction, stars: int, message: str):
+    @app_commands.command(name="review", description="Send a review")
+    async def review(self, interaction: discord.Interaction, stars: int, message: str):
         if stars < 1 or stars > 5:
-            return await interaction.response.send_message("Stars must be between 1 and 5.", ephemeral=True)
-        review_channel_id = config.get("review_channel")
-        if not review_channel_id:
+            return await interaction.response.send_message("Stars must be 1–5.", ephemeral=True)
+        cid = config.get("review_channel")
+        if not cid:
             return await interaction.response.send_message("Review channel not set.", ephemeral=True)
-        channel = interaction.guild.get_channel(review_channel_id)
-        if channel is None:
-            return await interaction.response.send_message("Invalid review channel.", ephemeral=True)
-        embed = discord.Embed(title="New Review Submitted", description=message, color=0x2b2d31)
-        embed.add_field(name="User", value=interaction.user.mention, inline=True)
-        embed.add_field(name="Stars", value="⭐" * stars, inline=True)
-        embed.timestamp = discord.utils.utcnow()
-        await channel.send(embed=embed)
+        ch = interaction.guild.get_channel(cid)
+        if not ch:
+            return await interaction.response.send_message("Invalid channel.", ephemeral=True)
+        e = discord.Embed(title="Review", description=message, color=0x2b2d31)
+        e.add_field(name="User", value=interaction.user.mention, inline=True)
+        e.add_field(name="Stars", value="⭐" * stars, inline=True)
+        e.timestamp = discord.utils.utcnow()
+        await ch.send(embed=e)
         await interaction.response.send_message("Review submitted.", ephemeral=True)
 
 @bot.event
@@ -216,7 +196,13 @@ async def on_ready():
     await bot.tree.sync()
 
 bot.add_cog(ReviewCommands(bot))
-bot.run(BOT_TOKEN)
+
+async def start():
+    token = await fetch_token(bot)
+    await bot.start(token)
+
+import asyncio
+asyncio.run(start())
 
 
 class PaymentSelect(discord.ui.Select):
