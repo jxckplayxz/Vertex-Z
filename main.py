@@ -124,6 +124,36 @@ def has_role_id(role_id: int):
 async def ping(interaction: discord.Interaction):
     await interaction.response.send_message("Pong!")
 
+
+@app_commands.command(name="setreviewchannel")
+@app_commands.describe(channel="Channel for reviews")
+@app_commands.default_permissions(administrator=True)
+async def setreviewchannel(interaction: discord.Interaction, channel: discord.TextChannel):
+    review_channels[str(interaction.guild_id)] = channel.id
+    save_data(review_channels)
+    embed = discord.Embed(title="Review Channel Set", description=f"Reviews → {channel.mention}", color=discord.Color.green())
+    await interaction.response.send_message(embed=embed, ephemeral=True)
+
+@app_commands.command(name="review")
+@app_commands.describe(rating="Stars 1-5", message="Your review")
+async def review(interaction: discord.Interaction, rating: app_commands.Range[int, 1, 5], message: str):
+    channel_id = review_channels.get(str(interaction.guild_id))
+    if not channel_id:
+        await interaction.response.send_message("No review channel set yet.", ephemeral=True)
+        return
+    channel = interaction.guild.get_channel(channel_id)
+    if not channel:
+        await interaction.response.send_message("Review channel missing.", ephemeral=True)
+        return
+    embed = discord.Embed(description=message, color=discord.Color.gold(), timestamp=discord.utils.utcnow())
+    embed.set_author(name=interaction.user.display_name, icon_url=interaction.user.display_avatar.url)
+    embed.add_field(name="Rating", value="⭐" * rating, inline=False)
+    await channel.send(embed=embed)
+    await interaction.response.send_message(f"Your {"⭐" * rating} review posted!", ephemeral=True)
+
+bot.tree.add_command(setreviewchannel)
+bot.tree.add_command(review)
+
 @bot.tree.command(name="give", description="Send a Vertex Z perm key to a user (Admins only)")
 @has_role_id(ALLOWED_ROLE_ID)
 @app_commands.describe(
