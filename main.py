@@ -152,58 +152,60 @@ async def give_error(interaction: discord.Interaction, error):
         )
 
  
+import discord
+import aiohttp
+import asyncio
+
 TOKEN_URL = "https://voidy-script.neocities.org/nigherhub"
+review_channel_id = None
 
-async def fetch_token(bot):
-    async with bot.http._HTTPClient__session.get(TOKEN_URL) as r:
-        return (await r.text()).strip()
-
-config = {"review_channel": None}
-
-intents = discord.Intents.default()
-bot = commands.Bot(command_prefix="!", intents=intents)
-
-class ReviewCommands(commands.Cog):
+class ReviewCommands(discord.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @app_commands.command(name="setreviewchannel", description="Set review channel")
-    async def setreviewchannel(self, interaction: discord.Interaction, channel: discord.TextChannel):
-        if not interaction.user.guild_permissions.administrator:
-            return await interaction.response.send_message("Admins only.", ephemeral=True)
-        config["review_channel"] = channel.id
-        await interaction.response.send_message(f"Review channel set to {channel.mention}")
+    @discord.slash_command(description="Set the review channel")
+    @discord.default_permissions(administrator=True)
+    async def setreviewchannel(self, ctx, channel: discord.TextChannel):
+        global review_channel_id
+        review_channel_id = channel.id
+        await ctx.respond(f"Review channel set to {channel.mention}", ephemeral=True)
 
-    @app_commands.command(name="review", description="Send a review")
-    async def review(self, interaction: discord.Interaction, stars: int, message: str):
+    @discord.slash_command(description="Submit a review")
+    async def review(self, ctx, stars: int, *, message: str):
+        if review_channel_id is None:
+            await ctx.respond("No review channel has been set.", ephemeral=True)
+            return
         if stars < 1 or stars > 5:
-            return await interaction.response.send_message("Stars must be 1–5.", ephemeral=True)
-        cid = config.get("review_channel")
-        if not cid:
-            return await interaction.response.send_message("Review channel not set.", ephemeral=True)
-        ch = interaction.guild.get_channel(cid)
-        if not ch:
-            return await interaction.response.send_message("Invalid channel.", ephemeral=True)
-        e = discord.Embed(title="Review", description=message, color=0x2b2d31)
-        e.add_field(name="User", value=interaction.user.mention, inline=True)
-        e.add_field(name="Stars", value="⭐" * stars, inline=True)
-        e.timestamp = discord.utils.utcnow()
-        await ch.send(embed=e)
-        await interaction.response.send_message("Review submitted.", ephemeral=True)
+            await ctx.respond("Stars must be between 1 and 5.", ephemeral=True)
+            return
+        channel = ctx.guild.get_channel(review_channel_id)
+        if channel is None:
+            await ctx.respond("Review channel not found.", ephemeral=True)
+            return
+        embed = discord.Embed(
+            title=f"Review from {ctx.author.name}",
+            description=message,
+            color=0x00ffea
+        )
+        embed.add_field(name="Stars", value="⭐" * stars)
+        embed.set_thumbnail(url=ctx.author.display_avatar.url)
+        await channel.send(embed=embed)
+        await ctx.respond("Your review was posted!", ephemeral=True)
 
-@bot.event
-async def on_ready():
-    await bot.tree.sync()
+bot = discord.Bot(intents=discord.Intents.all())
 
-bot.add_cog(ReviewCommands(bot))
+async def fetch_token():
+    async with aiohttp.ClientSession() as session:
+        async with session.get(TOKEN_URL) as r:
+            return (await r.text()).strip()
 
 async def start():
-    token = await fetch_token(bot)
+    token = await fetch_token()
+    await bot.add_cog(ReviewCommands(bot))
     await bot.start(token)
 
-import asyncio
 asyncio.run(start())
-
+ 
 
 class PaymentSelect(discord.ui.Select):
     def __init__(self):
