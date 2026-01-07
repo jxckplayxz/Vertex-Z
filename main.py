@@ -3395,6 +3395,257 @@ def serve_encrypted_keys():
     except Exception as e:
         return f"Error reading keys file: {str(e)}", 500
 
+from flask import Flask, request, redirect, render_template_string, session, jsonify
+from datetime import datetime, timedelta
+import sqlite3
+import uuid
+
+app = Flask(__name__)
+app.secret_key = "vertex-z-super-secret-change-this"
+
+# -------------------- CONFIG --------------------
+BASE_URL = "https://vertex-z.onrender.com"
+LOOTLABS_LINK = "https://lootdest.org/s?0wZia3d4"
+KEY_EXPIRY_MINUTES = 1440  # 24 hours
+KEY_PREFIX = "VZ_"
+DB_FILE = "database.db"
+ADMIN_TOKEN = "12345"
+
+# -------------------- DATABASE --------------------
+def db():
+    conn = sqlite3.connect(DB_FILE)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+def init_db():
+    c = db()
+    cur = c.cursor()
+    cur.execute('''
+    CREATE TABLE IF NOT EXISTS keys (
+        key TEXT PRIMARY KEY,
+        username TEXT,
+        used INTEGER,
+        expires TEXT,
+        created TEXT,
+        permanent INTEGER,
+        revoked INTEGER DEFAULT 0
+    )''')
+    cur.execute('''
+    CREATE TABLE IF NOT EXISTS banned_users (
+        username TEXT PRIMARY KEY,
+        banned_at TEXT
+    )''')
+    cur.execute('''
+    CREATE TABLE IF NOT EXISTS stats (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        event TEXT,
+        time TEXT
+    )''')
+    c.commit()
+    c.close()
+
+init_db()
+
+# -------------------- HELPERS --------------------
+def log(event):
+    c = db()
+    c.execute("INSERT INTO stats (event, time) VALUES (?,?)", (event, datetime.utcnow()))
+    c.commit()
+    c.close()
+
+def generate_key():
+    return KEY_PREFIX + uuid.uuid4().hex[:16].upper()
+
+# -------------------- HTML TEMPLATES --------------------
+INDEX_HTML = """
+<!DOCTYPE html>
+<html>
+<head>
+<title>Vertex Z</title>
+<style>
+body{background:#0b0f1a;color:white;font-family:sans-serif;display:flex;justify-content:center;align-items:center;height:100vh}
+.card{background:#11162a;padding:30px;border-radius:16px;width:360px;text-align:center}
+a{display:block;margin-top:20px;padding:14px;background:#5865F2;color:white;text-decoration:none;border-radius:10px;font-weight:bold}
+</style>
+</head>
+<body>
+<div class=card>
+<h2>Vertex Z Key System</h2>
+<p>Complete checkpoint to continue</p>
+<a href="/go">Get Key</a>
+</div>
+</body>
+</html>
+"""
+
+KEY_HTML = """
+<!DOCTYPE html>
+<html>
+<head>
+<title>Your Key</title>
+<style>
+body{background:#0b0f1a;color:white;font-family:sans-serif;display:flex;justify-content:center;align-items:center;height:100vh}
+.card{background:#11162a;padding:30px;border-radius:16px;width:420px;text-align:center}.key{background:#0b0f1a;padding:15px;border-radius:10px;font-size:20px}
+</style>
+</head>
+<body>
+<div class=card>
+<h3>Your Key</h3>
+<div class=key>{{key}}</div>
+<p id=t></p>
+</div>
+<script>
+let t={{minutes}}*60;
+const e=document.getElementById('t');
+setInterval(()=>{
+    let h = Math.floor(t/3600);
+    let m = Math.floor((t%3600)/60);
+    let s = t%60;
+    e.innerText=`Expires in ${h}h ${m}m ${s}s`;
+    t--;
+},1000);
+</script>
+</body>
+</html>
+"""
+
+DASHBOARD_HTML = """
+<!DOCTYPE html>
+<html>
+<head>
+<title>Dashboard</title>
+<style>
+body{background:#0b0f1a;color:white;font-family:sans-serif;padding:40px}
+.card{background:#11162a;padding:20px;border-radius:14px;margin-bottom:15px}
+</style>
+</head>
+<body>
+<h2>Vertex Z Dashboard</h2>
+<div class=card>Total Keys: {{total}}</div>
+<div class=card>Used Keys: {{used}}</div>
+<div class=card>Permanent Keys: {{perm}}</div>
+<div class=card>Banned Users: {{banned}}</div>
+{% for k,v in stats.items() %}
+<div class=card>{{k}} : {{v}}</div>
+{% endfor %}
+<p>Admin: <code>/admin/create_perm_key?token=YOUR_TOKEN</code></p>
+</body>
+</html>
+"""
+
+# -------------------- ROUTES --------------------
+@app.route("/keysys")
+def index():
+    log("visit")
+    return render_template_string(INDEX_HTML)
+
+@app.route("/go")
+def go():
+    session["from_lootlabs"] = True
+    log("lootlabs_start")
+    return redirect(LOOTLABS_LINK)
+
+@app.route("/generate")
+def generate():
+    if not session.get("from_lootlabs"):
+        return "Access denied", 403
+    session.pop("from_lootlabs", None)
+    key = generate_key()
+    expires = datetime.utcnow() + timedelta(minutes=KEY_EXPIRY_MINUTES)
+    c = db()
+    c.execute("INSERT INTO keys VALUES (?,?,?,?,?,?,?)", (key, None, 0, expires.isoformat(), datetime.utcnow().isoformat(), 0, 0))
+    c.commit()
+    c.close()
+    log("key_generated")
+    return render_template_string(KEY_HTML, key=key, minutes=KEY_EXPIRY_MINUTES)
+
+# -------------------- ADMIN ROUTES --------------------
+@app.route("/admin/create_perm_key")
+def create_perm_key():
+    token = request.args.get("token")
+    if token != ADMIN_TOKEN:
+        return "Unauthorized", 401
+    key = generate_key()
+    c = db()
+    c.execute("INSERT INTO keys VALUES (?,?,?,?,?,?,?)", (key, None, 0, None, datetime.utcnow().isoformat(), 1, 0))
+    c.commit()
+    c.close()
+    log("perm_key_created")
+    return f"Permanent Key Created: {key}"
+
+@app.route("/admin/revoke_key")
+def revoke_key():
+    token = request.args.get("token")
+    key = request.args.get("key")
+    if token != ADMIN_TOKEN:
+        return "Unauthorized", 401
+    c = db()
+    c.execute("UPDATE keys SET revoked=1 WHERE key=?", (key,))
+    c.commit()
+    c.close()
+    log(f"key_revoked:{key}")
+    return f"Key {key} revoked."
+
+@app.route("/admin/ban_username")
+def ban_username():
+    token = request.args.get("token")
+    username = request.args.get("username")
+    if token != ADMIN_TOKEN:
+        return "Unauthorized", 401
+    c = db()
+    c.execute("INSERT OR IGNORE INTO banned_users (username, banned_at) VALUES (?,?)", (username, datetime.utcnow().isoformat()))
+    c.commit()
+    c.close()
+    log(f"username_banned:{username}")
+    return f"Username {username} banned from all keys."
+
+# -------------------- VALIDATE --------------------
+@app.route("/validate", methods=["POST"])
+def validate():
+    data = request.json
+    key = data.get("key")
+    username = data.get("username")
+    if not key or not username:
+        return jsonify({"status": "error", "message": "Missing data"})
+    c = db()
+    banned = c.execute("SELECT * FROM banned_users WHERE username=?", (username,)).fetchone()
+    if banned:
+        c.close()
+        return jsonify({"status": "error", "message": "Your account is banned."})
+    row = c.execute("SELECT * FROM keys WHERE key=?", (key,)).fetchone()
+    if not row:
+        c.close()
+        return jsonify({"status": "error", "message": "Invalid key"})
+    if row["revoked"]:
+        c.execute("INSERT OR IGNORE INTO banned_users (username, banned_at) VALUES (?,?)", (username, datetime.utcnow().isoformat()))
+        c.commit()
+        c.close()
+        return jsonify({"status": "error", "message": "Key revoked. You are banned."})
+    if row["used"]:
+        c.close()
+        return jsonify({"status": "error", "message": "Key already used"})
+    if not row["permanent"]:
+        if datetime.utcnow() > datetime.fromisoformat(row["expires"]):
+            c.close()
+            return jsonify({"status": "error", "message": "Key expired"})
+    c.execute("UPDATE keys SET used=1, username=? WHERE key=?", (username, key))
+    c.commit()
+    c.close()
+    log("key_validated")
+    return jsonify({"status": "success"})
+
+# -------------------- DASHBOARD --------------------
+@app.route("/dashboard")
+def dashboard():
+    c = db()
+    stats = {r["event"]: r["count"] for r in c.execute("SELECT event, COUNT(*) as count FROM stats GROUP BY event")}
+    total_keys = c.execute("SELECT COUNT(*) FROM keys").fetchone()[0]
+    used_keys = c.execute("SELECT COUNT(*) FROM keys WHERE used=1").fetchone()[0]
+    perm_keys = c.execute("SELECT COUNT(*) FROM keys WHERE permanent=1").fetchone()[0]
+    banned_users = c.execute("SELECT COUNT(*) FROM banned_users").fetchone()[0]
+    c.close()
+    return render_template_string(DASHBOARD_HTML, stats=stats, total=total_keys, used=used_keys, perm=perm_keys, banned=banned_users)
+
 
 def run_flask():
     import os
