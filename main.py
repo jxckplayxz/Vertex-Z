@@ -3582,7 +3582,7 @@ def dashboard():
 
 @app.route("/212")
 def home():
-    return redirect("/dashboard?token=" + ADMIN_TOKEN))
+    return redirect("/dashboard?token=" + ADMIN_TOKEN)
 
 
 if __name__ == "__main__":
