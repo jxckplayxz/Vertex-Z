@@ -3395,6 +3395,10 @@ def serve_encrypted_keys():
     except Exception as e:
         return f"Error reading keys file: {str(e)}", 500
 
+def run_flask():
+    import os
+    app.run(host="0.0.0.0", port=5000)
+
 if __name__ == "__main__":
     start_key_checker()
     flask_thread = threading.Thread(target=run_flask)
