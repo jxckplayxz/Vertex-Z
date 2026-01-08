@@ -3400,8 +3400,6 @@ from datetime import datetime, timedelta
 import sqlite3
 import uuid
 
-app = Flask(__name__)
-app.secret_key = "vertex-z-super-secret-change-this"
 
 # -------------------- CONFIG --------------------
 BASE_URL = "https://vertex-z.onrender.com"
