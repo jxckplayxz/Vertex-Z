@@ -3583,7 +3583,4 @@ def dashboard():
 
 if __name__ == "__main__":
     start_key_checker()
-    flask_thread = threading.Thread(target=run_flask)
-    flask_thread.start()
-    get_bot_token
     bot.run(niggerbottoken)
