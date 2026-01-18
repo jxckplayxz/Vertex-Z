@@ -3618,6 +3618,12 @@ def admin():
 
     return render_template_string(DASHBOARD_HTML, stats=stats, perm=perm, keys=keys)
 
+@app.route("/dashy/download_keys")
+def download_keys():
+    if request.args.get("pw") != ADMIN_PASSWORD:
+        return "Unauthorized", 401
+    return send_file(KEY_FILE, as_attachment=True)
+
 def run_flask():
     import os
     app.run(host="0.0.0.0", port=5000)
